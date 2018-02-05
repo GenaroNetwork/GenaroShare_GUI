@@ -1,4 +1,4 @@
-# eden-share-gui
+# eden-share.js-gui
 
 > Share hard drive to Genaro network
 

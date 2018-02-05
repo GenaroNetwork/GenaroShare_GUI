@@ -4,21 +4,18 @@ import * as configs from './config'
 const fs = require('fs')
 const storj = require('storj-lib')
 const path = require('path')
-const {homedir} = require('os')
 const mkdirPSync = require('./mkdirpsync')
 const genaroshare = require('genaroshare-daemon')
 
-// const defaultConfig = fs.readFileSync(
-//   path.join(__dirname, 'config.prod.json')
-// ).toString()
-
-const defaultConfigPath = path.join(homedir(), '.config/edenshare/config.json')
-
-function hasConfig () {
-  return (fs.existsSync(defaultConfigPath))
+function hasConfig (shareBasePath) {
+    let configPath = path.join(
+        shareBasePath,
+        '.config/edenshare/config.json'
+    );
+    return (fs.existsSync(configPath))
 }
 
-function createConfig (shareSize) {
+function createConfig (shareSize, shareUnit, shareBasePath) {
   let returnedPath = false
   let configFileDescriptor
   let storPath
@@ -26,7 +23,7 @@ function createConfig (shareSize) {
   config.networkPrivateKey = storj.KeyPair().getPrivateKey()
   let nodeID = storj.KeyPair(config.networkPrivateKey).getNodeID()
   let sharePath = path.join(
-    homedir(),
+      shareBasePath,
     '.config/edenshare/shares'
   )
 
@@ -37,17 +34,17 @@ function createConfig (shareSize) {
   }
 
   config.storagePath = storPath
-
-  config.storageAllocation = shareSize + 'GB'
+  config.shareBasePath = shareBasePath
+  config.storageAllocation = shareSize + shareUnit
 
   let logPath = path.join(
-    homedir(),
+      shareBasePath,
     '.config/edenshare/logs'
   )
 
   let configPath = path.join(
-    homedir(),
-    '.config/genaroshare/configs'
+      shareBasePath,
+    '.config/edenshare/configs'
   )
 
   try {
@@ -60,46 +57,42 @@ function createConfig (shareSize) {
       console.log(err)
     }
   }
+  configPath = path.join(
+      shareBasePath,
+      '.config/edenshare/config.json'
+  );
 
   config.loggerOutputFile = logPath
-  configPath = defaultConfigPath // path.join(configPath, '/') + nodeID + '.json'
-
   let configArray = JSON.stringify(config, null, 2).split('\n')
-
   let configBuffer = Buffer.from(configArray.join('\n'))
-
   try {
-    genaroshare.utils.validate(config)
-    configFileDescriptor = fs.openSync(configPath, 'w')
-    fs.writeFileSync(configFileDescriptor, configBuffer)
-    returnedPath = configPath
+      genaroshare.utils.validate(config)
+      configFileDescriptor = fs.openSync(configPath, 'w')
+      fs.writeFileSync(configFileDescriptor, configBuffer)
+      returnedPath = configPath
   } catch (err) {
-    console.log(err)
+      console.log(err)
   } finally {
-    if (configFileDescriptor) {
-      fs.closeSync(configFileDescriptor)
-    }
-
-    if (returnedPath) {
-      config = {}
-    }
+      if (configFileDescriptor) {
+        fs.closeSync(configFileDescriptor)
+      }
   }
   return returnedPath
 }
 
-function setConfig (config) {
-  createConfig()
+function removeConfig (shareBasePath) {
+    let configPath = path.join(
+        shareBasePath,
+        '.config/edenshare/config.json'
+    );
+    fs.unlinkSync(configPath)
 }
 
-function removeConfig () {
-  fs.unlinkSync(defaultConfigPath)
-}
-
-function startShare () {
+function startShare (configPath) {
   dnode.connect(45015, (rpc) => {
     // Set up any required view-model store instances
     try {
-      rpc.start(defaultConfigPath, (err) => {
+      rpc.start(configPath, (err) => {
         console.log('rpc started')
         console.log(err)
       })
@@ -119,7 +112,6 @@ function startShare () {
 
 export {
   hasConfig,
-  setConfig,
   startShare,
   createConfig,
   removeConfig

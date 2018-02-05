@@ -60,7 +60,10 @@
     "vuex": "^2.3.1",
     "genaroshare-daemon": "^1.0.0",
     "dnode": "^1.2.2",
-    "storj-lib": "^8.5.0"
+    "storj-lib": "^8.5.0",
+    "bulma": "^0.6.1",
+    "human-size": "^1.1.0",
+    "iview": "^2.7.4"
   },
   "devDependencies": {
     "babel-core": "^6.25.0",
