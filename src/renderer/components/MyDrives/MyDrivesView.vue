@@ -2,7 +2,7 @@
     <div>
         <div class="layout-header">
             <p class="title" id="title">My Drives</p>
-            <Poptip placement="bottom-end" v-model="pop_visible">
+            <Poptip placement="bottom-end" v-model="add_share_pop_visible">
                 <Button type="primary" class="button1">+ Add Drive</Button>
                 <div slot="content">
                     <h3>Drive Location</h3>
@@ -10,7 +10,6 @@
                     <h3 style="margin-top:20px">Sharing Size</h3>
                     <Input v-model="share_size">
                     <Select v-model="select_unit" slot="append" style="width: 60px;">
-                        <Option value="MB" class="drop-down">MB</Option>
                         <Option value="GB" class="drop-down">GB</Option>
                         <Option value="TB" class="drop-down">TB</Option>
                     </Select>
@@ -72,11 +71,6 @@
             return {
                 columns4: [
                     {
-                        type: 'selection',
-                        width: 60,
-                        align: 'center'
-                    },
-                    {
                         title: 'Drive ID',
                         render: (h, params) => {
                             return h('p', {
@@ -98,6 +92,11 @@
                                        'white-space': 'nowrap',
                                        'text-overflow': 'ellipsis',
                                        'font-size': '15px'
+                                   },
+                                   on : {
+                                        mouseenter: ()  => {
+                                            this.$Message.info(params.row.location)
+                                        }
                                    }
                                 }, params.row.location);
                         }
@@ -184,23 +183,33 @@
                                    style: {
                                         float: 'left',
                                         'margin-top': '3px'
+                                   },
+                                   on : {
+                                        'on-change': (value) => {
+                                            if (value) {
+                                                this.restartShare(params.row.id);
+                                            } else {
+                                                this.stopShare(params.row.id);
+                                            }
+                                        }
                                    }
+
                                 }),
                                 h('Poptip', {
                                     props: {
                                        placement: 'bottom-end',
-                                       'v-model': 'pop_visible1'
+                                       'v-model': 'more_pop_visible'
                                     },
                                 }, [
-                                    h('span',{
+                                    h('div',{
                                         style: {
                                             'margin-left': '15px'
                                         },
                                         on : {
                                             click:() => {
-                                               this.pop_visible1 = true;
+                                               this.more_pop_visible = true;
                                                setInterval(() => {
-                                                    this.pop_visible1 = false;
+                                                    this.more_pop_visible = false;
                                                }, 5000)
                                             }
                                         }
@@ -208,7 +217,7 @@
                                         h('Icon', {
                                             props: {
                                                type : 'more',
-                                               size: '30'
+                                               size: '35'
                                             }
                                         })
                                     ]),
@@ -218,11 +227,12 @@
                                         h('div', {
                                             style : {
                                                 'font-size': '15px',
-                                                'width' : '50px'
+                                                'width' : '60px',
+                                                'height': '30px'
                                             },
                                             on : {
                                                 click:() => {
-                                                   this.pop_visible1 = false;
+                                                   this.more_pop_visible = false;
                                                    this.restartShare(params.row.id);
                                                 }
                                             }
@@ -230,11 +240,12 @@
                                         h('div', {
                                            style : {
                                                 'font-size': '15px',
-                                                'margin-top': '10px'
+                                                'width' : '60px',
+                                                'height': '30px'
                                            },
                                            on : {
                                                 click:() => {
-                                                   this.pop_visible1 = false;
+                                                   this.more_pop_visible = false;
                                                    this.stopShare(params.row.id);
                                                 }
                                            }
@@ -242,11 +253,12 @@
                                         h('div', {
                                            style : {
                                                 'font-size': '15px',
-                                                'margin-top': '10px'
+                                                'width' : '60px',
+                                                'height': '30px'
                                            },
                                            on : {
                                                 click:() => {
-                                                   this.pop_visible1 = false;
+                                                   this.more_pop_visible = false;
                                                    this.deleteShare(params.row.id, params.row.shareBasePath);
                                                 }
                                            }
@@ -263,15 +275,15 @@
                 no_data:"You have not shared storage space, hurry up and share it ...",
                 select_unit: "GB",
                 share_size: '1',
-                file_path: '请选择分享目录',
-                pop_visible: false,
-                pop_visible1: false
+                file_path: 'Please choose the sharing space',
+                add_share_pop_visible: false,
+                more_pop_visible: false
             }
         },
         created() {
             var that = this;
             share.showStatus(function(err, datas){
-                if (that.pop_visible1) return;
+                if (that.more_pop_visible) return;
                 if (datas) {
                     that.data1 = datas;
                 }
@@ -286,18 +298,22 @@
                 var that = this;
                 dialog.showSaveDialog(options, function(res) {
                     if(!res) {
-                        that.file_path = '请选择分享目录';
+                        that.file_path = 'Please choose the sharing space';
                         return;
                     }
                     that.file_path = res;
                 });
             },
             addShare() {
+                if (this.file_path.indexOf("Please") > -1) {
+                    this.$Message.info('Please choose the sharing space');
+                    return;
+                }
                 share.addNewConfig(this.share_size, this.select_unit, this.file_path);
-                this.pop_visible = false;
+                this.add_share_pop_visible = false;
             },
             cancelShare() {
-                this.pop_visible = false;
+                this.add_share_pop_visible = false;
             },
             deleteShare(id, shareBasePath) {
                 share.deleteShare(id, shareBasePath);

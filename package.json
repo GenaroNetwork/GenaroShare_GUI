@@ -19,7 +19,7 @@
     "postinstall": "electron-builder install-app-deps"
   },
   "build": {
-    "productName": "eden-share-gui",
+    "productName": "Genaro Share",
     "appId": "org.simulatedgreg.electron-vue",
     "directories": {
       "output": "build"

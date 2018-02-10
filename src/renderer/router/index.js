@@ -25,7 +25,7 @@ export default new Router({
                       },
                       {
                           path: '/my-wallet',
-                          component: require('@/components/MyDrives/MyDrivesView').default
+                          component: require('@/components/MyDrives/MyWalletView').default
                       }
                   ]
               }

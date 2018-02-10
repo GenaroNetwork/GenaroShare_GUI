@@ -3,18 +3,19 @@ import { createConfig, removeConfig, startShare } from '../../../lib/share'
 const prettyms = require('pretty-ms')
 
 function Share() {
-
 }
 
+Share.prototype.confuse = false;
 Share.prototype = {
     constructor:Share,
     showStatus: (cb) => {
+        var that = this;
         dnode.connect(45015, (rpc) => {
             console.log('web connected 45015')
             this.rpc = rpc;
             function showData () {
                 rpc.status((err, shares) => {
-                    if (err) {
+                    if (err || that.confuse) {
                         return;
                     }
                     if (shares.length === 0) {
@@ -89,13 +90,27 @@ Share.prototype = {
         }
         let configPath = createConfig(shareSize, shareUnit, shareBasePath);
         if (configPath) {
-            startShare(configPath);
+            try {
+                this.confuse = true;
+                var that = this;
+                this.rpc.start(configPath, (err) => {
+                    that.confuse = false;
+                    if(err) {
+                        alert(err.message)
+                    }
+                })
+            } catch (err) {
+                console.log(err)
+            }
         }
     },
     deleteShare: (id, shareBasePath) => {
+        this.confuse = true;
+        var that = this;
         this.rpc.destroy(id, (err) => {
+            that.confuse = false;
             if (err) {
-                alert(err)
+                alert(err.message)
             } else {
                 removeConfig(shareBasePath);
                 window.location.reload();
@@ -103,16 +118,22 @@ Share.prototype = {
         })
     },
     restartShare: (id) => {
+        this.confuse = true;
+        var that = this;
         this.rpc.restart(id, (err) => {
+            that.confuse = false;
             if (err) {
-                alert(err)
+                alert(err.message)
             }
         })
     },
     stopShare: (id) => {
+        this.confuse = true;
+        var that = this;
         this.rpc.stop(id, (err) => {
+            that.confuse = false;
             if (err) {
-                alert(err)
+                alert(err.message)
             }
         })
     }

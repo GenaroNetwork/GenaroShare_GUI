@@ -6,7 +6,7 @@
 
 <script>
   export default {
-    name: 'eden-share-gui'
+    name: 'Genaro Share'
   }
 </script>
 
