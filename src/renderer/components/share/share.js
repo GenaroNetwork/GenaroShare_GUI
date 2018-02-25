@@ -68,6 +68,7 @@ Share.prototype = {
                                 break;
                         }
                         data.delta = share.meta.farmerState.ntpStatus ? share.meta.farmerState.ntpStatus.delta : 9999;
+                        data.show = false;
                         // data.listenPort = share.meta.farmerState.portStatus.listenPort;
 
                         datas.push(data);

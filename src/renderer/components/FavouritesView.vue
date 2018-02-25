@@ -23,15 +23,22 @@
         height: 15px;
         vertical-align: middle;
     }
+
 </style>
 
 <template>
     <div class="colcontainer">
         <div class="layout-favourites-enum">
-            <i-menu theme="light" :active-name="activePath" @on-select="routerTo">
-                <Menu-Item name="my-drives"><img :src="drive_icon" class="icon"> My Drives</Menu-Item>
-                <Menu-Item name="my-wallet"><img :src="wallet_icon" class="icon"> My Wallet</Menu-Item>
-            </i-menu>
+            <el-menu :default-active="defaultActive" @select="(index)=>{defaultActive = index}" :router="true">
+                <el-menu-item index="0" route="/my-drives">
+                    <i class="el-icon-share"></i>
+                    <span slot="title">My Drives</span>
+                </el-menu-item>
+                <el-menu-item index="1" route="/my-wallet">
+                    <i class="el-icon-goods"></i>
+                    <span slot="title">My Wallet</span>
+                </el-menu-item>
+            </el-menu>
         </div>
         <!-- 文件列表div -->
         <div class="layout-favourites-content">
@@ -43,42 +50,16 @@
 </template>
 
 <script>
-    import drive_unselect from './../assets/drive_unselect@2x.png';
-    import drive_select from './../assets/drive_select@2x.png';
-    import wallet_unselect from './../assets/wallet_unselect@2x.png';
-    import wallet_select from './../assets/wallet_select@2x.png';
 
     export default {
         data() {
             return {
-                activeName: 'my-drives',
-                drive_icon: drive_select,
-                wallet_icon: wallet_unselect
+                defaultActive: "0",
             }
         },
         created: function () {
-            this.routerTo("my-drives");
-        },
-        computed: {
-            activePath() {
-              return this.$route.path.replace('/','');
-            }
-        },
-        methods: {
-            routerTo(e) {
-                console.log(e);
-                switch(e) {
-                    case 'my-drives':
-                        this.drive_icon = drive_select;
-                        this.wallet_icon = wallet_unselect;
-                    break;
-                    case 'my-wallet':
-                        this.drive_icon = drive_unselect;
-                        this.wallet_icon = wallet_select;
-                    break;
-                }
-                this.$router.push({ path: '/' + e});
-            }
+             this.$router.push({ path: "/my-drives" });
         }
     }
+
 </script>

@@ -53,6 +53,10 @@
     }
   },
   "dependencies": {
+    "@fortawesome/fontawesome": "^1.1.2",
+    "@fortawesome/fontawesome-free-brands": "^5.0.4",
+    "@fortawesome/fontawesome-free-solid": "^5.0.4",
+    "@fortawesome/vue-fontawesome": "0.0.22",
     "vue": "^2.3.3",
     "axios": "^0.16.1",
     "vue-electron": "^1.0.6",
@@ -63,7 +67,7 @@
     "storj-lib": "^8.5.0",
     "bulma": "^0.6.1",
     "human-size": "^1.1.0",
-    "iview": "^2.7.4"
+    "element-ui": "^2.2.0"
   },
   "devDependencies": {
     "babel-core": "^6.25.0",
