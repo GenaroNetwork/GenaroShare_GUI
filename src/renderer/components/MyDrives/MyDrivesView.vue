@@ -22,6 +22,17 @@
             <el-button type="primary" v-popover:popover class="button1">+ Add Drive</el-button>
 
         </div>
+
+        <el-dialog
+                title="Notice"
+                :visible.sync="dialogVisible"
+                width="30%">
+            <span>{{dialogMessage}}</span>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="handleDialog">确 定</el-button>
+            </span>
+        </el-dialog>
         <el-table :data="data1" :empty-text="no_data">
             <el-table-column label="Drive ID">
                 <template slot-scope="scope">
@@ -67,9 +78,12 @@
                 <template slot-scope="scope">
                     <el-popover ref="popover{{$index}}" placement="bottom-end" v-model="scope.row.show">
                         <div style="width:150px;text-align:center;">
-                            <el-button type="text" @click="restartShare(scope.row)">Restart</el-button><br/>
-                            <el-button type="text" @click="stopShare(scope.row)">Stop</el-button><br/>
-                            <el-button type="text" @click="deleteShare(scope.row, scope.row.shareBasePath)">Delete</el-button>
+                            <el-button type="text" @click="restartShare(scope.row)">Restart</el-button>
+                            <br/>
+                            <el-button type="text" @click="stopShare(scope.row)">Stop</el-button>
+                            <br/>
+                            <el-button type="text" @click="deleteShare(scope.row)">Delete
+                            </el-button>
                         </div>
                     </el-popover>
                     <el-switch v-model="scope.row.statusSwitch" @change="buttonSwitch(scope.row)"></el-switch>
@@ -136,27 +150,34 @@
         data () {
             return {
                 data1: [],
+                connectId : "",
                 no_data:"You have not shared storage space, hurry up and share it ...",
                 select_unit: "GB",
                 share_size: '1',
                 file_path: 'Please choose the sharing space',
                 add_share_pop_visible: false,
-                more_pop_visible: false
+                more_pop_visible: false,
+                dialogVisible : false,
+                dialogMessage : "",
+                dialogType : 1,
+                rowData: null
+
             }
         },
         created() {
             var that = this;
-            share.showStatus(function(err, datas){
+            share.showStatus(function(err, datas, connectId){
                 if (that.more_pop_visible) return;
                 if (datas) {
                     that.data1 = datas;
+                    that.connectId = connectId;
                 }
             });
         },
         methods: {
             selectFile() {
                 var options = {
-                    title: '请选择文件夹',
+                    title: 'Please choose the sharing space',
                     defaultPath: "share"
                 }
                 var that = this;
@@ -182,17 +203,52 @@
             cancelShare() {
                 this.add_share_pop_visible = false;
             },
-            deleteShare(row, shareBasePath) {
-                row.show = false;
-                share.deleteShare(row.id, shareBasePath);
-            },
             restartShare(row) {
-                row.show = false;
-                share.restartShare(row.id);
+                this.dialogVisible = true;
+                this.dialogMessage = "Do you confirm to restart your sharing node?";
+                this.dialogType = 1;
+                this.rowData = row;
             },
             stopShare(row) {
-                row.show = false;
-                share.stopShare(row.id);
+                this.dialogVisible = true;
+                this.dialogMessage = "Do you confirm to stop your sharing node? You can restart anytime later, but users cannot get their data during the time you stop, thus you cannot get reward and it will lower your device reputation score.";
+                this.dialogType = 2;
+                this.rowData = row;
+            },
+            deleteShare(row) {
+                this.dialogVisible = true;
+                this.dialogMessage = "Do you confirm to delete your sharing node? You will lose all data stored on your drive and cannot get reward, also it will lower your device reputation score.";
+                this.dialogType = 3;
+                this.rowData = row;
+            },
+            handleDialog() {
+                var row = this.rowData;
+                if (row == null) {
+                    return;
+                }
+                switch(this.dialogType) {
+                    case 1:
+                        if (this.connectId != "") {
+                            this.$message({
+                                type: 'info',
+                                message: 'You can only connect one node at one time, please stop ' + this.connectId + ' first.'
+                            });
+                            return
+                        }
+                        row.show = false;
+                        share.restartShare(row.id);
+                    break;
+                    case 2:
+                         row.show = false;
+                         share.stopShare(row.id);
+                    break;
+                    case 3:
+                        row.show = false;
+                        share.deleteShare(row.id, row.shareBasePath);
+                    break;
+                }
+                this.dialogVisible = false;
+                this.rowData = null;
             },
             morePop(row) {
                 this.more_pop_visible = true;
@@ -204,14 +260,15 @@
             },
             buttonSwitch(row) {
                 if (row.statusSwitch) {
-                    share.restartShare(row.id);
+                    this.restartShare(row);
                 } else {
-                    share.stopShare(row.id);
+                    this.stopShare(row);
                 }
             }
 
         }
     }
+
 
 
 

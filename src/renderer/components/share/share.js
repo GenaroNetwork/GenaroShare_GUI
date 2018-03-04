@@ -22,6 +22,7 @@ Share.prototype = {
                         return;
                     }
                     var datas = new Array();
+                    var connectId = "";
                     for (var share of shares) {
                         var data = new Object();
                         data.id = share.id;
@@ -62,6 +63,7 @@ Share.prototype = {
                                 break;
                             case 1:
                                 data.statusSwitch = true;
+                                connectId = share.id;
                                 break;
                             case 2:
                                 data.statusSwitch = false;
@@ -74,7 +76,7 @@ Share.prototype = {
                         datas.push(data);
 
                     }
-                    cb(null, datas);
+                    cb(null, datas, connectId);
 
                 })
             }
