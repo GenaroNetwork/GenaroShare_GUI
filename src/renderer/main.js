@@ -1,6 +1,13 @@
 import Vue from 'vue'
 import axios from 'axios'
 
+import ElementUI from 'element-ui'
+import 'element-ui/lib/theme-chalk/index.css'
+import directive from 'element-ui/packages/popover/src/directive'
+Vue.directive('popover', directive)
+
+Vue.use(ElementUI)
+
 import App from './App'
 import router from './router'
 import store from './store'
@@ -10,10 +17,6 @@ import 'material-design-icons/iconfont/material-icons.css';
 
 import iView from 'iview';
 import 'iview/dist/styles/iview.css';    // 使用 CSS
-import ElementUI from 'element-ui'
-import 'element-ui/lib/theme-chalk/index.css';
-import directive from 'element-ui/packages/popover/src/directive'
-Vue.directive('popover', directive)
 Vue.use(iView)
 
 import i18n from './i18n';

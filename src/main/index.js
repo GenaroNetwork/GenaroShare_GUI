@@ -81,9 +81,9 @@ function maybeStartDaemon(callback) {
 function initRPCServer(callback) {
     let RPCServer
     if (process.env.NODE_ENV === 'development') {
-        RPCServer = fork(`${__dirname}/../../static/rpc-server.js`, { env: { STORJ_NETWORK: '' } })
+        RPCServer = fork(`${__dirname}/../../static/rpc-server.js`, { env: { STORJ_NETWORK: 'gtest' } })
     } else {
-        RPCServer = fork(`${__dirname}/static/rpc-server.js`, { env: { STORJ_NETWORK: '' } })
+        RPCServer = fork(`${__dirname}/static/rpc-server.js`, { env: { STORJ_NETWORK: 'genaro' } })
     }
     process.on('exit', () => {
         RPCServer.kill()

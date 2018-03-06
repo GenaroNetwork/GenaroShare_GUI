@@ -22,6 +22,7 @@ Share.prototype = {
                         return;
                     }
                     var datas = new Array();
+                    var connectId = "";
                     for (var share of shares) {
                         var data = new Object();
                         data.id = share.id;
@@ -62,18 +63,20 @@ Share.prototype = {
                                 break;
                             case 1:
                                 data.statusSwitch = true;
+                                connectId = share.id;
                                 break;
                             case 2:
                                 data.statusSwitch = false;
                                 break;
                         }
                         data.delta = share.meta.farmerState.ntpStatus ? share.meta.farmerState.ntpStatus.delta : 9999;
+                        data.show = false;
                         // data.listenPort = share.meta.farmerState.portStatus.listenPort;
 
                         datas.push(data);
 
                     }
-                    cb(null, datas);
+                    cb(null, datas, connectId);
 
                 })
             }

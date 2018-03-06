@@ -3,7 +3,7 @@
 </template>
 <style>
     body{
-        background-color:#ff0000;
+        background-color:#ffffff;
     }
 </style>
 <script>
