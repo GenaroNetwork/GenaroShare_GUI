@@ -1,5 +1,5 @@
 import { app, BrowserWindow, Menu, shell, } from 'electron';
-import registerProtocals from './customProtocol'
+import registerProtocals from './customProtocol' 
 import { startShare } from '../lib/share'
 const defaultMenu = require('./appMenu');
 import i18n, { writeLangJsonConfigFile } from '../renderer/i18n';
@@ -45,8 +45,9 @@ function createWindow() {
     /**
      * Initial window options
      */
-    registerProtocals()
-    setMenu()
+    registerProtocals();
+    setMenu();
+    app.menuSetting.updateMenu();
     mainWindow = new BrowserWindow({
         height: 563,
         useContentSize: true,
