@@ -377,7 +377,7 @@
         </div>
 
         <!-- transaction history -->
-        <div class="flex flex-grow">
+        <div class="">
             <el-table :data="txList" class="transactions" row-class-name="file-row">
                 <el-table-column prop="state" label="" width="60" class-name="no-wrap">
                     <template slot-scope="scope">
@@ -486,7 +486,7 @@ export default {
                 }
                 let price = await getGasPrice();
                 price = utils.fromWei(price.toString(), "Gwei");
-                if (value < price) {
+                if (parseInt(value) < parseInt(price)) {
                     callback(new Error(this.$t('dashboard.mywallet.gaspriceerrmsg', { price })));
                 } else {
                     callback();
