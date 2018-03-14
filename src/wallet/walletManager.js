@@ -101,6 +101,7 @@ async function saveWallet(wa, name, pass) {
     v3.name = name;
     v3.created = Date.now();
     db.get('wallet').push(v3).write();
+    return v3;
 }
 
 async function updateWalletPassword(wa, newPass) {
@@ -123,7 +124,7 @@ async function importFromMnemonic(mnemonic, password) {
     let wallet = hdkey.fromMasterSeed(seed).derivePath(`m/44'/60'/0'/0`).deriveChild(0).getWallet();
 
     //const ss = wallet.getAddress().toString()
-    await saveWallet(wallet, generateWalletName(), password);
+    return await saveWallet(wallet, generateWalletName(), password);
 }
 
 function importFromPrivateKey() {
@@ -288,6 +289,7 @@ async function submitAddress(user, address, password) {
 }
 export default {
     loadWallet,
+    loadRawWallet,
     importFromV3Json,
     importFromMnemonic,
     initRawWallet,

@@ -1,39 +1,34 @@
-
-Skip to content
-This repository
-
-    Pull requests
-    Issues
-    Marketplace
-    Explore
-
-    @flowfire
-
-4
-1
-
-    0
-
-GenaroNetwork/GenaroShare_GUI
-Code
-Issues 0
-Pull requests 0
-Projects 0
-Wiki
-Insights
-Settings
-GenaroShare_GUI/src/renderer/components/MyDrives/MyDrivesView.vue
-9633f15 2 days ago
-@LinKingR LinKingR bug fix
-We found a potential security vulnerability in one of your dependencies.
-
-The electron dependency defined in package-lock.json has a known critical severity security vulnerability in version range >= 1.7.0,< 1.7.11 and should be updated.
-
-Only users who have been granted access to vulnerability alerts for this repository can see this message.
-Learn more about vulnerability alerts
-286 lines (264 sloc) 10.1 KB
-<template xmlns:v-popover="">
+<template>
     <div>
+
+        <el-dialog title="set recipient wallet" :visible.sync="setRecipientDialogVisible" width="600px" :center="true" v-loading="setRecipientDialogLoading">
+            <el-form v-model="setWallet" label-position="top" size="small">
+                <el-form-item label="Driver ID">
+                    <el-input v-model="setWallet.nodeId" :disabled="true" type="string"></el-input>
+                </el-form-item>
+                <el-form-item label="quantity">
+                    <el-input v-model="setWallet.quantity" type="number" min="5000" placeholder="set the quantity for stake, and will get a respond of size of sharing"></el-input>
+                </el-form-item>
+                <el-form-item label="option">
+                    <el-select v-model="setWallet.option" placeholder="set the option for months to be shared">
+                        <el-option v-for="(option, index) of setWallet.options" :key="`option-${index}`" :label="option.label" :value="option.value"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="choose wallet">
+                    <el-select v-model="setWallet.wallet" placeholder="Choose a wallet as recipient">
+                        <el-option v-for="(wallet, index) of setWallet.wallets" :key="`wallet-${index}`" :label="wallet.name" :value="wallet.address"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="wallet password">
+                    <el-input v-model="setWallet.password" type="password" placeholder="input your wallet password"></el-input>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="setRecipientDialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="setRecipient()">确 定</el-button>
+            </span>
+        </el-dialog>
+
         <div class="layout-header">
             <el-popover ref="popover" placement="bottom-end" trigger="click" v-model="add_share_pop_visible">
                 <div>
@@ -57,74 +52,53 @@ Learn more about vulnerability alerts
 
         </div>
 
-        <el-dialog
-                title="Notice"
-                :visible.sync="dialogVisible"
-                width="30%">
+        <el-dialog title="Notice" :visible.sync="dialogVisible" width="30%">
             <span>{{dialogMessage}}</span>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="dialogVisible = false">取 消</el-button>
                 <el-button type="primary" @click="handleDialog">确 定</el-button>
             </span>
         </el-dialog>
-        <el-table :data="data1" :empty-text="no_data">
-            <el-table-column label="Drive ID">
-                <template slot-scope="scope">
-    <p class="id-style">{{scope.row.id}}</p>
-</template>
+        <el-table :data="driversData" :empty-text="no_data">
+            <el-table-column label="Drive ID" prop="id" :show-overflow-tooltip="true">
             </el-table-column>
-            <el-table-column label="Location">
-                <template slot-scope="scope">
-    <p class="id-style">{{scope.row.location}}</p>
-</template>
+            <el-table-column label="Location" prop="location" :show-overflow-tooltip="true">
             </el-table-column>
             <el-table-column label="Shared">
                 <template slot-scope="scope">
-    <div>
-        <el-progress :percentage="scope.row.percentUsed"></el-progress>
-        <p>{{scope.row.spaceUsed}}/{{scope.row.storageAllocation}}</p>
-    </div>
-</template>
+                    <div>
+                        <el-progress :percentage="scope.row.percentUsed"></el-progress>
+                        <p>{{scope.row.spaceUsed}}/{{scope.row.storageAllocation}}</p>
+                    </div>
+                </template>
             </el-table-column>
-            <el-table-column label="Uptime">
-                <template slot-scope="scope">
-    <p class="font-size:15px">{{scope.row.time}}</p>
-</template>
+            <el-table-column label="Uptime" prop="time">
             </el-table-column>
-            <el-table-column label="Peers">
-                <template slot-scope="scope">
-    <p class="font-size:15px">{{scope.row.peers}}</p>
-</template>
+            <el-table-column label="Peers" prop="peers">
             </el-table-column>
-            <el-table-column label="Allocs">
-                <template slot-scope="scope">
-    <p class="font-size:15px">{{scope.row.allocs}}</p>
-</template>
+            <el-table-column label="Allocs" prop="allocs" :show-overflow-tooltip="true">
             </el-table-column>
-            <el-table-column label="Bridges">
-                <template slot-scope="scope">
-    <div>
-        <p style="font-size:13px;margin-left:15px;">{{scope.row.bridgesText}}</p>
-    </div>
-</template>
+            <el-table-column label="Bridges" prop="bridgesText">
             </el-table-column>
             <el-table-column label="Status">
                 <template slot-scope="scope">
-    <el-popover ref="popover{{$index}}" placement="bottom-end" v-model="scope.row.show">
-        <div style="width:150px;text-align:center;">
-            <el-button type="text" @click="restartShare(scope.row)">Restart</el-button>
-            <br/>
-            <el-button type="text" @click="stopShare(scope.row)">Stop</el-button>
-            <br/>
-            <el-button type="text" @click="deleteShare(scope.row)">Delete
-            </el-button>
-        </div>
-    </el-popover>
-    <el-switch v-model="scope.row.statusSwitch" @change="buttonSwitch(scope.row)"></el-switch>
-    <span style="margin-left:15px;" @click="morePop(scope.row)" v-popover:popover{{$index}}>
-        <i class="el-icon-more"></i>
-    </span>
-</template>
+                    <el-popover ref="popover{{$index}}" placement="bottom-end" v-model="scope.row.show">
+                        <div style="width:150px;text-align:center;">
+                            <el-button type="text" @click="setRecipientDialog(scope.row)">Set recipient</el-button>
+                            <br/>
+                            <el-button type="text" @click="restartShare(scope.row)">Restart</el-button>
+                            <br/>
+                            <el-button type="text" @click="stopShare(scope.row)">Stop</el-button>
+                            <br/>
+                            <el-button type="text" @click="deleteShare(scope.row)">Delete
+                            </el-button>
+                        </div>
+                    </el-popover>
+                    <el-switch v-model="scope.row.statusSwitch" @change="buttonSwitch(scope.row)" style="margin-right: 15px;"></el-switch>
+                    <el-button type="text" @click="morePop(scope.row)" v-popover:popover{{$index}}>
+                        <i class="el-icon-more"></i>
+                    </el-button>
+                </template>
             </el-table-column>
         </el-table>
     </div>
@@ -136,7 +110,7 @@ Learn more about vulnerability alerts
 .input-style {
   height: 40px;
   line-height: 40px;
-  line-width: 200px;
+  width: 200px;
   padding-left: 12px;
   padding-right: 12px;
   text-overflow: ellipsis;
@@ -147,7 +121,7 @@ Learn more about vulnerability alerts
 .id-style {
   overflow: hidden;
   white-space: nowrap;
-  text-overflo: ellipsis;
+  text-overflow: ellipsis;
   font-size: 15px;
 }
 .title {
@@ -159,7 +133,7 @@ Learn more about vulnerability alerts
   margin-top: 25px;
 }
 .button1 {
-  margin-left: title.width;
+  margin-left: 0;
   margin-top: 25px;
 }
 .button2 {
@@ -175,12 +149,38 @@ Learn more about vulnerability alerts
 }
 </style>
 <script>
-import share from "../share/share.js"
-const { dialog } = require('electron').remote
+import Share from "../share/share";
+import { web3 } from "../../../wallet/web3Util";
+let share = new Share;
+console.log(share);
+const { dialog } = require('electron').remote;
 export default {
     data() {
         return {
-            data1: [],
+            setRecipientDialogVisible: false,
+            setRecipientDialogLoading: false,
+            setWallet: {
+                nodeId: '',
+                quantity: 0,
+                wallet: '',
+                wallets: [],
+                password: '',
+                option: null,
+                options: [{
+                    label: "A month",
+                    value: 0,
+                }, {
+                    label: "3 months",
+                    value: 2,
+                }, {
+                    label: "6 months",
+                    value: 5,
+                }, {
+                    label: "A year",
+                    value: 12,
+                }]
+            },
+            driversData: [],
             connectId: "",
             no_data: "You have not shared storage space, hurry up and share it ...",
             select_unit: "GB",
@@ -191,16 +191,15 @@ export default {
             dialogVisible: false,
             dialogMessage: "",
             dialogType: 1,
-            rowData: null
+            rowData: null,
         }
     },
     created() {
-        var that = this;
-        share.showStatus(function (err, datas, connectId) {
-            if (that.more_pop_visible) return;
+        share.showStatus((err, datas, connectId) => {
+            if (this.more_pop_visible) return;
             if (datas) {
-                that.data1 = datas;
-                that.connectId = connectId;
+                this.driversData = datas;
+                this.connectId = connectId;
             }
         });
     },
@@ -294,22 +293,35 @@ export default {
             } else {
                 this.stopShare(row);
             }
+        },
+        setRecipientDialog(row) {
+            this.setRecipientDialogVisible = true;
+            this.setRecipientDialogLoading = false;
+            this.setWallet.wallets = this.$store.state.WalletList.wallets;
+            this.setWallet.nodeId = row.id;
+            this.setWallet.wallet = null;
+            this.setWallet.password = null;
+            this.setWallet.quantity = null;
+            this.setWallet.option = null;
+        },
+        async setRecipient() {
+            try {
+                this.setRecipientDialogLoading = true;
+                let hash = await this.$store.dispatch("walletListSetPayment", {
+                    address: this.setWallet.wallet,
+                    password: this.setWallet.password,
+                    option: this.setWallet.option,
+                    nodeId: this.setWallet.nodeId,
+                    quantity: this.setWallet.quantity,
+                });
+                this.setRecipientDialogLoading = false;
+                this.setRecipientDialogVisible = false;
+                this.$message.success("success");
+            } catch (e) {
+                this.setRecipientDialogLoading = false;
+                this.$message.error(e.message);
+            }
         }
     }
 }
 </script>
-
-    © 2018 GitHub, Inc.
-    Terms
-    Privacy
-    Security
-    Status
-    Help
-
-    Contact GitHub
-    API
-    Training
-    Shop
-    Blog
-    About
-

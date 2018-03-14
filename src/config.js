@@ -16,6 +16,10 @@ const GNX_PER_GB_BANDWIDTH = 5.0;
 const GNX_PER_GB_HOUR_STORAGE = 0.002054795;
 
 const AUTO_UPLOAD_URL = "http://eden-auto-update.oss-cn-shanghai.aliyuncs.com/update.json";
+const HTTP_PROVIDER = "https://ropsten.infura.io/wYBhtj2SSUB7qlztqEjx";
+
+const GNXAddr = "0x9e22797c8f5E8148d010DD9Bbb8f47a0Def069A4";
+const EmuAddr = "0x4BAC64d1aA7a3167eB225FFB2B1c9C049e027Cfc";
 
 const TASK_STATE = Object.freeze({
     INIT: 1,
@@ -41,4 +45,7 @@ export {
     GNX_PER_GB_BANDWIDTH,
     GNX_PER_GB_HOUR_STORAGE,
     AUTO_UPLOAD_URL,
+    HTTP_PROVIDER,
+    GNXAddr,
+    EmuAddr,
 }

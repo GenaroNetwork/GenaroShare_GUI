@@ -1,8 +1,11 @@
 import walletManager from '../../../wallet/walletManager'
 import * as txManager from '../../../wallet/transactionManager'
-import { getBalanceEth, getBalanceGnx } from '../../../wallet/transactionManager'
+import { getBalanceEth, getBalanceGnx } from '../../../wallet/transactionManager';
+const Tx = require('ethereumjs-tx');
 
-const fs = require('fs')
+import { web3, GNXAddr, EMUAddr as EmuAddr } from "../../../wallet/web3Util";
+
+const fs = require('fs');
 const state = {
     wallets: [],
     balances: {
@@ -91,19 +94,83 @@ const actions = {
         await walletManager.changePassword(address, password, newPassword)
         await dispatch('walletListInit')
     },
-    async walletListSetPayment({ commit, dispatch, rootState }, { address, password, amount, gasPrice }) {
-        // first set to 0 or transaction will fail: https://github.com/ethereum/EIPs/issues/738
-        // 1: GNX approve
-        // 2: Submit to network
-        const rawTrans0 = await walletManager.generateSignedApproveTx(address, password, 0, gasPrice, 70000);
-        await txManager.sendTransactionNoLog(rawTrans0);
-        // 1: GNX approve
-        // 2: Submit to network
-        const rawTrans = await walletManager.generateSignedApproveTx(address, password, amount, gasPrice, 70000);
-        await txManager.sendTransactionNoLog(rawTrans);
-        const user = rootState.User.username;
-        await walletManager.submitAddress(user, address, password);
-        commit("walletListSetPayment", { address });
+    async walletListSetPayment({ commit, dispatch, rootState }, { address, password, option, nodeId, quantity }) {
+        function hex8(val) {
+            val &= 0xFF;
+            var hex = val.toString(16).toUpperCase();
+            return ("00" + hex).slice(-1);
+        }
+
+        function toUTF8Array(str) {
+            var utf8 = [];
+            for (var i = 0; i < str.length; i++) {
+                var charcode = str.charCodeAt(i);
+                if (charcode < 0x80) utf8.push(charcode);
+                else if (charcode < 0x800) {
+                    utf8.push(0xc0 | (charcode >> 6),
+                        0x80 | (charcode & 0x3f));
+                }
+                else if (charcode < 0xd800 || charcode >= 0xe000) {
+                    utf8.push(0xe0 | (charcode >> 12),
+                        0x80 | ((charcode >> 6) & 0x3f),
+                        0x80 | (charcode & 0x3f));
+                }
+                // surrogate pair
+                else {
+                    i++;
+                    // UTF-16 encodes 0x10000-0x10FFFF by
+                    // subtracting 0x10000 and splitting the
+                    // 20 bits of 0x0-0xFFFFF into two halves
+                    charcode = 0x10000 + (((charcode & 0x3ff) << 10)
+                        | (str.charCodeAt(i) & 0x3ff));
+                    utf8.push(0xf0 | (charcode >> 18),
+                        0x80 | ((charcode >> 12) & 0x3f),
+                        0x80 | ((charcode >> 6) & 0x3f),
+                        0x80 | (charcode & 0x3f));
+                }
+            }
+            return utf8;
+        }
+        // set the provider you want from Web3.providers
+        let gasPrice = await web3.eth.getGasPrice();
+        let wallet = await walletManager.loadRawWallet(address, password);
+        let GNX = require("../../../wallet/GNX.json");
+        let abi = GNX.abi;
+
+        let Contract = new web3.eth.Contract(abi, GNXAddr)
+        if (web3.currentProvider.connected !== true)
+            console.log('not ready yet, please try again')
+        else
+            console.log('starting in seconds...')
+        // var _str = '0x'+hex8(genaroshare_stake.option)+genaroshare_stake.nodeID;
+        let _str = hex8(option) + nodeId;
+        let _buffer = toUTF8Array(_str);
+        let _newstr = web3.utils.bytesToHex(_buffer);
+        let nonceval = await web3.eth.getTransactionCount(address);
+
+        let txOptions = {
+            gasPrice: web3.utils.toHex(parseInt(gasPrice)),
+            gasLimit: web3.utils.toHex(470000),
+            value: 0,
+            nonce: web3.utils.toHex(nonceval),
+            from: address,
+            to: GNXAddr,
+            data: Contract.methods.approveAndCall(EmuAddr, quantity * 10 ** 9, _newstr).encodeABI(),
+            chainId: 3 //ropsten
+            // chainId:0 //mainnet
+        }
+        // key should be the one from genaro stake stakebase
+        var privateKey = wallet._privKey;
+        var tx = new Tx(txOptions);
+        tx.sign(privateKey);
+        var serializedTx = tx.serialize();
+        console.log(serializedTx.toString('hex'));
+
+        web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'), (err, hash) => {
+            if (err) { console.log(err); return; }
+
+            console.log('stake tx hash: ' + hash);
+        });
     },
     async walletListUpdateName({ commit }, { address, name }) {
         await walletManager.updateWalletName({ address, name });

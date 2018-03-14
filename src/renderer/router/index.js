@@ -30,6 +30,10 @@ export default new Router({
                         {
                             path: '/wallet-manager',
                             component: require('@/components/MyDrives/WalletManager').default
+                        },
+                        {
+                            path: '/generate-wallet',
+                            component: require('@/components/EncryptionKey.vue').default
                         }
                     ]
                 }

@@ -278,6 +278,9 @@
 
         <div class="top-bar">
             <h2>{{ $t('dashboard.walletmanage.walletmanage') }}</h2>
+            <el-button type="primary" size="small" @click="generateWallet">
+                {{ $t('dashboard.walletmanage.create') }}
+            </el-button>
             <el-button type="primary" @click="importV3WalletDialog.shown=true" size="small">{{ $t('dashboard.walletmanage.import', {name: ' Json'}) }}
                 <i class="el-icon-upload el-icon--right"></i>
             </el-button>
@@ -448,6 +451,9 @@ export default {
         }
     },
     methods: {
+        generateWallet() {
+            this.$router.push('/generate-wallet');
+        },
         clearDialog(name) {
             switch (name) {
                 case "resetPassword":
@@ -622,7 +628,7 @@ export default {
         },
         qrUrl(id) {
             return "qr://" + id;
-        }
+        },
     }
 };
 </script>
