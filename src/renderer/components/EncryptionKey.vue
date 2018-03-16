@@ -194,7 +194,7 @@ div.key-area {
 <script>
 import { getEncryptionKey, saveEncryptionKey } from '../utils/dbUtil'
 import router from '../router'
-import { Storj, mnemonicCheck, mnemonicGenerate } from '../utils/storjApiClient'
+import bip39 from 'bip39'
 import walletManager from '../../wallet/walletManager'
 
 export default {
@@ -235,16 +235,6 @@ export default {
         }
     },
     methods: {
-        checkKeyOkAndContinue() {
-            getEncryptionKey(bridgePass).then((encryptionKey) => {
-                if (encryptionKey) {
-                    Storj.init({ bridgeUser, bridgePass, encryptionKey });
-                    router.push({ path: '/index' });
-                } else {
-                    console.log('no key found');
-                }
-            })
-        },
         async generateWallet(mnemonic, password) {
             // generate an HD wallet
             walletManager.importFromMnemonic(mnemonic, password).then(wallet => {
@@ -257,7 +247,7 @@ export default {
             })
         },
         confirm() {
-            const valid = mnemonicCheck(this.encryptionKey)
+            const valid = bip39.validateMnemonic(this.encryptionKey)
             if (valid) {
                 this.showPage = "setPassword";
                 //this.generateWallet(this.encryptionKey, pwd)
@@ -296,15 +286,8 @@ export default {
                 this.$message.error(this.$t('encryption.keymismatch'));
             }
         },
-        submitLogin() {
-            saveEncryptionKey(this.encryptionKey, pwd).then(() => {
-                this.checkKeyOkAndContinue();
-            }).catch((e) => {
-                console.error(e)
-            })
-        },
         randomKey() {
-            this.encryptionKey = mnemonicGenerate(128)
+            this.encryptionKey = bip39.generateMnemonic();
         },
         saveKey() {
             const theKey = this.encryptionKey
