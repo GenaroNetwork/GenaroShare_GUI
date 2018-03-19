@@ -6,13 +6,28 @@ const storj = require('storj-lib')
 const path = require('path')
 const mkdirPSync = require('./mkdirpsync')
 const genaroshare = require('genaroshare-daemon')
+const os = require('os')
 
-function hasConfig (shareBasePath) {
-    let configPath = path.join(
-        shareBasePath,
-        '.config/edenshare/config.json'
-    );
-    return (fs.existsSync(configPath))
+const basePath = path.join(os.homedir(), '.config/genaroshare')
+mkdirPSync(basePath)
+const configDir = path.join(basePath, 'configs');
+mkdirPSync(configDir)
+const logDir = path.join(basePath, 'logs');
+mkdirPSync(logDir)
+
+const config_files = []
+function _initConfigs() {
+  fs.readdirSync(configDir).forEach(file => {
+    if(file.endsWith('.json')) {
+      console.log(`add config file: ${file}`);
+      config_files.push(file)
+    }
+  })  
+}
+_initConfigs()
+
+function hasConfig () {
+  return config_files.length !== 0
 }
 
 function createConfig (shareSize, shareUnit, shareBasePath) {
@@ -22,10 +37,7 @@ function createConfig (shareSize, shareUnit, shareBasePath) {
   let config = configs.prodConfig
   config.networkPrivateKey = storj.KeyPair().getPrivateKey()
   let nodeID = storj.KeyPair(config.networkPrivateKey).getNodeID()
-  let sharePath = path.join(
-      shareBasePath,
-    '.config/edenshare/shares'
-  )
+  let sharePath = shareBasePath
 
   if (config.storagePath === undefined || config.storagePath === '') {
     storPath = path.join(sharePath, '/', nodeID)
@@ -39,12 +51,12 @@ function createConfig (shareSize, shareUnit, shareBasePath) {
 
   let logPath = path.join(
       shareBasePath,
-    '.config/edenshare/logs'
+    '.config/genaroshare/logs'
   )
 
   let configPath = path.join(
       shareBasePath,
-    '.config/edenshare/configs'
+    '.config/genaroshare/configs'
   )
 
   try {
@@ -59,7 +71,7 @@ function createConfig (shareSize, shareUnit, shareBasePath) {
   }
   configPath = path.join(
       shareBasePath,
-      '.config/edenshare/config.json'
+      '.config/genaroshare/config.json'
   );
 
   config.loggerOutputFile = logPath
@@ -83,7 +95,7 @@ function createConfig (shareSize, shareUnit, shareBasePath) {
 function removeConfig (shareBasePath) {
     let configPath = path.join(
         shareBasePath,
-        '.config/edenshare/config.json'
+        '.config/genaroshare/config.json'
     );
     fs.unlinkSync(configPath)
 }
