@@ -189,7 +189,7 @@ export default {
             addSharePop: {
                 visible: false,
                 select_unit: "GB",
-                share_size: '1',
+                share_size: 100,
                 file_path: null,
             },
             more_pop_visible: false,
