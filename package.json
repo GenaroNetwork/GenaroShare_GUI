@@ -66,7 +66,6 @@
         "human-size": "^1.1.0",
         "iview": "^2.9.2",
         "jdenticon": "^1.8.0",
-        "keytar": "^4.2.0",
         "less": "^3.0.1",
         "less-loader": "^4.1.0",
         "lowdb": "^1.0.0",
