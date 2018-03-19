@@ -30,13 +30,16 @@
         </el-dialog>
 
         <div class="layout-header">
-            <el-popover ref="popover" placement="bottom-end" trigger="click" v-model="add_share_pop_visible">
+            <el-popover ref="popover" placement="bottom-end" trigger="click" v-model="addSharePop.visible">
                 <div>
                     <h3>Drive Location</h3>
-                    <p class="input-style" @click="selectFile">{{file_path}}</p>
+                    <p class="input-style" @click="selectFile">
+                        <span v-if="addSharePop.file_path">{{addSharePop.file_path}}</span>
+                        <span v-if="!addSharePop.file_path">Please select sharing directory</span>
+                    </p>
                     <h3 style="margin-top:20px">Sharing Size</h3>
-                    <el-input v-model="share_size">
-                        <el-select v-model="select_unit" slot="append" style="width: 70px;">
+                    <el-input v-model="addSharePop.share_size">
+                        <el-select v-model="addSharePop.select_unit" slot="append" style="width: 70px;">
                             <el-option value="GB">GB</el-option>
                             <el-option value="TB">TB</el-option>
                         </el-select>
@@ -183,10 +186,12 @@ export default {
             driversData: [],
             connectId: "",
             no_data: "You have not shared storage space, hurry up and share it ...",
-            select_unit: "GB",
-            share_size: '1',
-            file_path: 'Please choose the sharing space',
-            add_share_pop_visible: false,
+            addSharePop: {
+                visible: false,
+                select_unit: "GB",
+                share_size: '1',
+                file_path: null,
+            },
             more_pop_visible: false,
             dialogVisible: false,
             dialogMessage: "",
@@ -207,30 +212,28 @@ export default {
         selectFile() {
             var options = {
                 title: 'Please choose the sharing space',
-                defaultPath: "share"
+                properties: ['openDirectory']
             }
             var that = this;
-            dialog.showSaveDialog(options, function (res) {
-                if (!res) {
-                    that.file_path = 'Please choose the sharing space';
-                    return;
+            dialog.showOpenDialog(options, function (res) {
+                if (res && res[0]) {
+                    that.addSharePop.file_path = res[0];
                 }
-                that.file_path = res;
             });
         },
         addShare() {
-            if (this.file_path.indexOf("Please") > -1) {
+            if (!this.addSharePop.file_path) {
                 this.$message({
                     type: 'info',
                     message: 'Please choose the sharing space'
                 });
                 return;
             }
-            share.addNewConfig(this.share_size, this.select_unit, this.file_path);
-            this.add_share_pop_visible = false;
+            share.addNewConfig(this.addSharePop.share_size, this.addSharePop.select_unit, this.addSharePop.file_path);
+            this.addSharePop.visible = false;
         },
         cancelShare() {
-            this.add_share_pop_visible = false;
+            this.addSharePop.visible = false;
         },
         restartShare(row) {
             this.dialogVisible = true;
