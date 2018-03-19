@@ -84,7 +84,7 @@ function initRPCServer(callback) {
     if (process.env.NODE_ENV === 'development') {
         RPCServer = fork(`${__dirname}/../../static/rpc-server.js`, { env: { STORJ_NETWORK: 'gtest' } })
     } else {
-        RPCServer = fork(`${__dirname}/static/rpc-server.js`, { env: { STORJ_NETWORK: 'gtest' } })
+        RPCServer = fork(`${__dirname}/static/rpc-server.js`,       { env: { STORJ_NETWORK: 'gtest' } })
     }
     process.on('exit', () => {
         RPCServer.kill()
