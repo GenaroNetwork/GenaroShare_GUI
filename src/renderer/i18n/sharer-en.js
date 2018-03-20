@@ -169,6 +169,30 @@ exports.default = {
       tip2: 'If you want to share your storage space please click\
         <a target="_blank" href="https://www.npmjs.com/package/genaroshare-daemon">this link</a>\
         for a detailed explanation on how to install and run Genaro Sharer.'
+    },
+    drive: {
+      mydrives: 'My Drives',
+      adddrive: '+ Add Drive',
+      driveid: 'Drive ID',
+      location: 'Location',
+      shared: 'Shared',
+      uptime: 'Uptime',
+      peers: 'Peers',
+      allocs: 'Allocs',
+      bridges: 'Bridges',
+      status: 'Status',
+      haventshared: 'You have not shared storage space, hurry up and share it ...',
+      choosesharing: 'Please choose the sharing space',
+      drivelocation: 'Drive Location',
+      setrecipient: 'Set recipient',
+      restart: 'restart',
+      stop: 'Stop',
+      notice: 'Notice',
+      sharingsize: 'Sharing Size',
+      connected: 'Connected',
+      confirming: 'Confirming',
+      connecting: 'Connecting',
+      disconnected: 'Disconnected'
     }
   },
   menu: {
