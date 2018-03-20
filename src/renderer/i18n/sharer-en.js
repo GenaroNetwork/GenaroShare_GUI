@@ -183,6 +183,7 @@ exports.default = {
       status: 'Status',
       haventshared: 'You have not shared storage space, hurry up and share it ...',
       choosesharing: 'Please choose the sharing space',
+      selectsharing: 'Please select sharing directory',
       drivelocation: 'Drive Location',
       setrecipient: 'Set recipient',
       restart: 'restart',

@@ -1,6 +1,6 @@
 import { app, BrowserWindow, Menu, shell, } from 'electron';
 import registerProtocals from './customProtocol' 
-import { startShare } from '../lib/share'
+// import { startShare } from '../lib/share'
 const defaultMenu = require('./appMenu');
 import i18n, { writeLangJsonConfigFile } from '../renderer/i18n';
 
@@ -84,18 +84,17 @@ function initRPCServer(callback) {
     if (process.env.NODE_ENV === 'development') {
         RPCServer = fork(`${__dirname}/../../static/rpc-server.js`, { env: { STORJ_NETWORK: 'gtest' } })
     } else {
-        RPCServer = fork(`${__dirname}/static/rpc-server.js`, { env: { STORJ_NETWORK: 'gtest' } })
+        RPCServer = fork(`${__dirname}/static/rpc-server.js`,       { env: { STORJ_NETWORK: 'gtest' } })
     }
     process.on('exit', () => {
         RPCServer.kill()
     })
     RPCServer.on('message', (msg) => {
         if (msg.state === 'init') {
-            startShare()
+            //startShare()
             return callback()
         } else {
             RPCServer.removeAllListeners()
-            console.log('ddddd')
             // let killMsg = new FatalExceptionDialog(app, mainWindow, new Error(msg.error))
 
             // killMsg.render()
@@ -105,6 +104,7 @@ function initRPCServer(callback) {
 
 function initRender() {
     maybeStartDaemon(() => {
+        // guarantee daemon is running
         createWindow()
     })
 }

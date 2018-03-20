@@ -183,6 +183,7 @@ exports.default = {
       status: '状态',
       haventshared: '您尚未分享存储空间，赶快分享吧...',
       choosesharing: '请选择待分享空间',
+      selectsharing: '请选择待分享目录',
       drivelocation: '驱动器位置',
       setrecipient: '设置接收方',
       restart: '重启',
