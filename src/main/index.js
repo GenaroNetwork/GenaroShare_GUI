@@ -1,6 +1,6 @@
 import { app, BrowserWindow, Menu, shell, } from 'electron';
 import registerProtocals from './customProtocol' 
-import { startShare } from '../lib/share'
+// import { startShare } from '../lib/share'
 const defaultMenu = require('./appMenu');
 import i18n, { writeLangJsonConfigFile } from '../renderer/i18n';
 
@@ -91,11 +91,10 @@ function initRPCServer(callback) {
     })
     RPCServer.on('message', (msg) => {
         if (msg.state === 'init') {
-            startShare()
+            //startShare()
             return callback()
         } else {
             RPCServer.removeAllListeners()
-            console.log('ddddd')
             // let killMsg = new FatalExceptionDialog(app, mainWindow, new Error(msg.error))
 
             // killMsg.render()
@@ -105,6 +104,7 @@ function initRPCServer(callback) {
 
 function initRender() {
     maybeStartDaemon(() => {
+        // guarantee daemon is running
         createWindow()
     })
 }

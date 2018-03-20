@@ -55,7 +55,7 @@
     "dependencies": {
         "axios": "^0.18.0",
         "bip39": "^2.5.0",
-        "bitcore-lib": "^0.15.0",
+        "bitcore-lib": "0.13.19",
         "bulma": "^0.6.1",
         "dnode": "^1.2.2",
         "element": "^0.1.4",

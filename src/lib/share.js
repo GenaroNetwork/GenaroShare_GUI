@@ -7,37 +7,69 @@ const path = require('path')
 const mkdirPSync = require('./mkdirpsync')
 const genaroshare = require('genaroshare-daemon')
 const os = require('os')
+const events = require('events');
+const shareEventEmitter = new events.EventEmitter();
 
-const basePath = path.join(os.homedir(), '.config/genaroshare')
-mkdirPSync(basePath)
-const configDir = path.join(basePath, 'configs');
-mkdirPSync(configDir)
-const logDir = path.join(basePath, 'logs');
-mkdirPSync(logDir)
+const RPC_PORT = 45015
+const BASE_PATH = path.join(os.homedir(), '.config/genaroshare')
+try {
+  mkdirPSync(BASE_PATH)
+  console.log(`config base path: ${BASE_PATH}`)
+} catch (error) {}
+const CONFIG_DIR = path.join(BASE_PATH, 'configs');
+try {
+  mkdirPSync(CONFIG_DIR)
+  console.log(`config path: ${CONFIG_DIR}`)
+} catch (error) {}
+const LOG_DIR = path.join(BASE_PATH, 'logs');
+try {
+  mkdirPSync(LOG_DIR)
+  console.log(`log path: ${LOG_DIR}`)
+} catch (error) {}
 
-const config_files = []
+const configIds = []
 function _initConfigs() {
-  fs.readdirSync(configDir).forEach(file => {
-    if(file.endsWith('.json')) {
-      console.log(`add config file: ${file}`);
-      config_files.push(file)
+  fs.readdirSync(CONFIG_DIR).forEach(file => {
+    let fileobj = path.parse(file)
+    if(fileobj.ext === '.json' && fileobj.name.length === 40) {
+      console.log(`add config file: ${file}`)
+      configIds.push(fileobj.name)
     }
   })  
 }
 _initConfigs()
-
-function hasConfig () {
-  return config_files.length !== 0
+function _getConfigPathById(nodeId) {
+  return path.join(
+    CONFIG_DIR,
+    `${nodeId}.json`
+  );
 }
 
-function createConfig (shareSize, shareUnit, shareBasePath) {
+function _remove (nodeId) {
+  const configPath = _getConfigPathById(nodeId)
+  fs.unlinkSync(configPath)
+  console.log(`${configPath} deleted`)
+}
+
+/**
+ * create config with parameters and return nodeID
+ * @param {*} shareSize 
+ * @param {*} shareUnit 
+ * @param {*} shareBasePath 
+ */
+function create (shareSize, shareUnit, shareBasePath) {
+  console.log(`create config with size: ${shareSize}${shareUnit}, path: ${shareBasePath}`)
   let returnedPath = false
   let configFileDescriptor
   let storPath
   let config = configs.prodConfig
   config.networkPrivateKey = storj.KeyPair().getPrivateKey()
   let nodeID = storj.KeyPair(config.networkPrivateKey).getNodeID()
-  let sharePath = shareBasePath
+  console.log(`creating node id: ${nodeID}`)
+  config.storagePath = shareBasePath
+  try {
+    mkdirPSync(shareBasePath)
+  } catch (err) {}
 
   if (config.storagePath === undefined || config.storagePath === '') {
     storPath = path.join(sharePath, '/', nodeID)
@@ -46,85 +78,110 @@ function createConfig (shareSize, shareUnit, shareBasePath) {
   }
 
   config.storagePath = storPath
-  config.shareBasePath = shareBasePath
   config.storageAllocation = shareSize + shareUnit
 
-  let logPath = path.join(
-      shareBasePath,
-    '.config/genaroshare/logs'
-  )
-
-  let configPath = path.join(
-      shareBasePath,
-    '.config/genaroshare/configs'
-  )
-
-  try {
-    mkdirPSync(config.storagePath)
-    mkdirPSync(sharePath)
-    mkdirPSync(logPath)
-    mkdirPSync(configPath)
-  } catch (err) {
-    if (err.code !== 'EEXIST') {
-      console.log(err)
-    }
-  }
-  configPath = path.join(
-      shareBasePath,
-      '.config/genaroshare/config.json'
+  let configFilePath = path.join(
+    CONFIG_DIR,
+    `${nodeID}.json`
   );
 
-  config.loggerOutputFile = logPath
+  config.loggerOutputFile = LOG_DIR
   let configArray = JSON.stringify(config, null, 2).split('\n')
   let configBuffer = Buffer.from(configArray.join('\n'))
   try {
-      genaroshare.utils.validate(config)
-      configFileDescriptor = fs.openSync(configPath, 'w')
-      fs.writeFileSync(configFileDescriptor, configBuffer)
-      returnedPath = configPath
+    genaroshare.utils.validate(config)
+    configFileDescriptor = fs.openSync(configFilePath, 'w')
+    fs.writeFileSync(configFileDescriptor, configBuffer)
+    console.log(`wrote config file to: ${configFilePath}`)
   } catch (err) {
-      console.log(err)
+    console.log(err)
   } finally {
-      if (configFileDescriptor) {
-        fs.closeSync(configFileDescriptor)
-      }
-  }
-  return returnedPath
-}
-
-function removeConfig (shareBasePath) {
-    let configPath = path.join(
-        shareBasePath,
-        '.config/genaroshare/config.json'
-    );
-    fs.unlinkSync(configPath)
-}
-
-function startShare (configPath) {
-  dnode.connect(45015, (rpc) => {
-    // Set up any required view-model store instances
-    try {
-      rpc.start(configPath, (err) => {
-        console.log('rpc started')
-        console.log(err)
-      })
-    } catch (err) {
-      console.log(err)
+    if (configFileDescriptor) {
+      fs.closeSync(configFileDescriptor)
     }
+  }
+  _initConfigs()
+  return nodeID
+}
 
-    // setInterval(() => {
-    //   rpc.status((err, shares) => {
-    //     console.log('-----')
-    //     console.log(err)
-    //     console.log(shares)
-    //   })
-    // }, 3000)
+function start (nodeId, cb) {
+  dnode.connect(RPC_PORT, (rpc) => {
+    const configPath = _getConfigPathById(nodeId)
+    rpc.start(configPath, (err) => {
+      if(cb) cb(err)
+    })
   })
 }
 
+function startAll (cb) {
+  let errs = []
+  let len = configIds.length
+  configIds.forEach(nodeId => {
+    start(nodeId, err => {
+      if(err) errs.push(err)
+      len --
+      if(cb) {
+        if(len === 0) {
+          if(errs.length > 0) {
+            cb(errs)
+          } else {
+            cb()
+          }
+        }
+      }
+    })
+  })
+}
+
+function stop (nodeId, cb) {
+  dnode.connect(RPC_PORT, (rpc) => {
+    rpc.stop(nodeId, err => {
+      if(cb) cb(err)
+    })
+  })
+}
+
+function restart (nodedId, cb) {
+  dnode.connect(RPC_PORT, (rpc) => {
+    rpc.restart(nodeId, err => {
+      if(cb) cb(err)
+    })
+  })
+}
+
+function status (cb) {
+  dnode.connect(RPC_PORT, (rpc) => {
+    rpc.status((err, statuses) => {
+      if(cb) cb(err, statuses)
+    })
+  })
+}
+
+function destory (nodeId, cb) {
+  dnode.connect(RPC_PORT, (rpc) => {
+    rpc.destory(nodeId, err => {
+      _removeConfig(nodeId)
+      if(cb) cb(err)
+    })
+  })
+}
+
+// status watcher
+(()=>{
+  setInterval(() => {
+    status((err, statuses) => {
+      shareEventEmitter.emit('statusUpdate', statuses)
+    })
+  }, 3000)
+})()
+
 export {
-  hasConfig,
-  startShare,
-  createConfig,
-  removeConfig
+  create,
+  start,
+  stop,
+  restart,
+  status,
+  destory,
+  startAll,
+  shareEventEmitter
 }

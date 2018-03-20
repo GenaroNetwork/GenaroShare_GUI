@@ -31,7 +31,6 @@ var prodConfig = {
   'loggerOutputFile': '',
   'loggerVerbosity': 4,
   'storagePath': '',
-  'shareBasePath': '',
   'storageAllocation': '5GB',
   'enableTelemetryReporting': false
 }
@@ -69,7 +68,6 @@ var testConfig = {
   'loggerOutputFile': '',
   'loggerVerbosity': 4,
   'storagePath': '',
-  'shareBasePath': '',
   'storageAllocation': '5GB',
   'enableTelemetryReporting': false
 }
