@@ -93,8 +93,11 @@
                             <br/>
                             <el-button type="text" @click="stopShare(scope.row)">Stop</el-button>
                             <br/>
-                            <el-button type="text" @click="deleteShare(scope.row)">Delete
-                            </el-button>
+                            <el-button type="text" @click="deleteShare(scope.row)">Delete</el-button>
+                            <br/>
+                            <el-button type="text" @click="showLog(scope.row)">Show Log</el-button>
+                            <br/>
+                            <el-button type="text" @click="openConfig(scope.row)">Open Config</el-button>
                         </div>
                     </el-popover>
                     <el-switch v-model="scope.row.statusSwitch" @change="buttonSwitch(scope.row)" style="margin-right: 15px;"></el-switch>
@@ -310,6 +313,12 @@ export default {
             this.dialogMessage = "Do you confirm to delete your sharing node? You will lose all data stored on your drive and cannot get reward, also it will lower your device reputation score.";
             this.dialogType = 3;
             this.rowData = row;
+        },
+        showLog(row) {
+            share.openLogFolder()
+        },
+        openConfig(row) {
+            share.openConfig(row.id)
         },
         handleDialog() {
             var row = this.rowData;

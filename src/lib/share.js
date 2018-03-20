@@ -9,6 +9,7 @@ const genaroshare = require('genaroshare-daemon')
 const os = require('os')
 const events = require('events');
 const shareEventEmitter = new events.EventEmitter();
+const {shell} = require('electron')
 
 const RPC_PORT = 45015
 const BASE_PATH = path.join(os.homedir(), '.config/genaroshare')
@@ -141,7 +142,7 @@ function stop (nodeId, cb) {
   })
 }
 
-function restart (nodedId, cb) {
+function restart (nodeId, cb) {
   dnode.connect(RPC_PORT, (rpc) => {
     rpc.restart(nodeId, err => {
       if(cb) cb(err)
@@ -159,13 +160,21 @@ function status (cb) {
 
 function destory (nodeId, cb) {
   dnode.connect(RPC_PORT, (rpc) => {
-    rpc.destory(nodeId, err => {
-      _removeConfig(nodeId)
+    rpc.destroy(nodeId, err => {
+      _remove(nodeId)
       if(cb) cb(err)
     })
   })
 }
 
+function openLogFolder () {
+  shell.showItemInFolder(LOG_DIR)
+}
+
+function openConfig (nodeId) {
+  const configPath = _getConfigPathById(nodeId)
+  shell.openItem(configPath)
+}
 // status watcher
 (()=>{
   setInterval(() => {
@@ -183,5 +192,7 @@ export {
   status,
   destory,
   startAll,
-  shareEventEmitter
+  shareEventEmitter,
+  openLogFolder,
+  openConfig
 }
