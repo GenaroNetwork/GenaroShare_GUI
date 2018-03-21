@@ -171,6 +171,31 @@ exports.default = {
       tip2: '如果你想要分享你的存储空间，请点击\
         <a target="_blank" href="https://www.npmjs.com/package/genaroshare-daemon">此处</a>\
         获取安装文件和Genaro Sharer使用说明.'
+    },
+    drive: {
+      mydrives: '我的驱动器',
+      adddrive: '+ 增加驱动器',
+      driveid: '编号',
+      location: '位置',
+      shared: '已分享',
+      uptime: '分享时间',
+      peers: '共享者',
+      allocs: '分配',
+      bridges: '桥接',
+      status: '状态',
+      haventshared: '您尚未分享存储空间，赶快分享吧...',
+      choosesharing: '请选择待分享空间',
+      selectsharing: '请选择待分享目录',
+      drivelocation: '驱动器位置',
+      setrecipient: '设置接收方',
+      restart: '重启',
+      stop: '停止',
+      notice: '注意',
+      sharingsize: '分享大小',
+      connected: '已连接',
+      confirming: '正在确认',
+      connecting: '正在连接',
+      disconnected: '断开连接'
     }
   },
   menu: {

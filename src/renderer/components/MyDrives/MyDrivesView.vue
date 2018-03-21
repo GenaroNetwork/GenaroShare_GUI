@@ -40,12 +40,12 @@
         <div class="layout-header">
             <el-popover ref="popover" placement="bottom-end" trigger="click" v-model="addSharePop.visible">
                 <div>
-                    <h3>Drive Location</h3>
+                    <h3>{{ $t("dashboard.drive.drivelocation") }}</h3>
                     <p class="input-style" @click="selectFile">
                         <span v-if="addSharePop.file_path">{{addSharePop.file_path}}</span>
-                        <span v-if="!addSharePop.file_path">Please select sharing directory</span>
+                        <span v-if="!addSharePop.file_path">{{ $t("dashboard.drive.selectsharing") }}</span>
                     </p>
-                    <h3 style="margin-top:20px">Sharing Size</h3>
+                    <h3 style="margin-top:20px">{{ $t("dashboard.drive.sharingsize") }}</h3>
                     <el-input v-model="addSharePop.share_size">
                         <el-select v-model="addSharePop.select_unit" slot="append" style="width: 70px;">
                             <el-option value="GB">GB</el-option>
@@ -53,17 +53,17 @@
                         </el-select>
                     </el-input>
                     <div style="margin-top:45px">
-                        <el-button class="button2" @click="cancelShare">Cancel</el-button>
-                        <el-button type="primary" class="button2" @click="addShare">Next</el-button>
+                        <el-button class="button2" @click="cancelShare">{{ $t("el.datepicker.cancel") }}</el-button>
+                        <el-button type="primary" class="button2" @click="addShare">{{ $t("common.next") }}</el-button>
                     </div>
                 </div>
             </el-popover>
-            <p class="title" id="title">My Drives</p>
-            <el-button type="primary" v-popover:popover class="button1">+ Add Drive</el-button>
+            <p class="title" id="title">{{ $t("dashboard.drive.mydrives") }}</p>
+            <el-button type="primary" v-popover:popover class="button1">{{ $t("dashboard.drive.adddrive") }}</el-button>
 
         </div>
 
-        <el-dialog title="Notice" :visible.sync="dialogVisible" width="30%">
+        <el-dialog :title="$t('dashboard.drive.notice')" :visible.sync="dialogVisible" width="30%">
             <span>{{dialogMessage}}</span>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="dialogVisible = false">{{ this.$t("common.cancel") }}</el-button>
@@ -71,11 +71,11 @@
             </span>
         </el-dialog>
         <el-table :data="driversData" :empty-text="no_data">
-            <el-table-column label="Drive ID" prop="id" :show-overflow-tooltip="true">
+            <el-table-column :label="$t('dashboard.drive.driveid')" prop="id" :show-overflow-tooltip="true">
             </el-table-column>
-            <el-table-column label="Location" prop="location" :show-overflow-tooltip="true">
+            <el-table-column :label="$t('dashboard.drive.location')" prop="location" :show-overflow-tooltip="true">
             </el-table-column>
-            <el-table-column label="Shared">
+            <el-table-column :label="$t('dashboard.drive.shared')">
                 <template slot-scope="scope">
                     <div>
                         <el-progress :percentage="scope.row.percentUsed"></el-progress>
@@ -83,25 +83,25 @@
                     </div>
                 </template>
             </el-table-column>
-            <el-table-column label="Uptime" prop="time">
+            <el-table-column :label="$t('dashboard.drive.uptime')" prop="time">
             </el-table-column>
-            <el-table-column label="Peers" prop="peers">
+            <el-table-column :label="$t('dashboard.drive.peers')" prop="peers">
             </el-table-column>
-            <el-table-column label="Allocs" prop="allocs" :show-overflow-tooltip="true">
+            <el-table-column :label="$t('dashboard.drive.allocs')" prop="allocs" :show-overflow-tooltip="true">
             </el-table-column>
-            <el-table-column label="Bridges" prop="bridgesText">
+            <el-table-column :label="$t('dashboard.drive.bridges')" prop="bridgesText">
             </el-table-column>
-            <el-table-column label="Status">
+            <el-table-column :label="$t('dashboard.drive.status')">
                 <template slot-scope="scope">
                     <el-popover ref="popover{{$index}}" placement="bottom-end" v-model="scope.row.show">
                         <div style="width:150px;text-align:center;">
-                            <el-button type="text" @click="setRecipientDialog(scope.row)">Set recipient</el-button>
+                            <el-button type="text" @click="setRecipientDialog(scope.row)">{{ $t("dashboard.drive.setrecipient") }}</el-button>
                             <br/>
-                            <el-button type="text" @click="restartShare(scope.row)">Restart</el-button>
+                            <el-button type="text" @click="restartShare(scope.row)">{{ $t("dashboard.drive.restart") }}</el-button>
                             <br/>
-                            <el-button type="text" @click="stopShare(scope.row)">Stop</el-button>
+                            <el-button type="text" @click="stopShare(scope.row)">{{ $t("dashboard.drive.stop") }}</el-button>
                             <br/>
-                            <el-button type="text" @click="deleteShare(scope.row)">Delete</el-button>
+                            <el-button type="text" @click="deleteShare(scope.row)">{{ $t("common.delete") }}</el-button>
                             <br/>
                             <el-button type="text" @click="showLog(scope.row)">Show Log</el-button>
                             <br/>
@@ -195,7 +195,6 @@ export default {
                 }]
             },
             driversData: [],
-            no_data: "You have not shared storage space, hurry up and share it ...",
             addSharePop: {
                 visible: false,
                 select_unit: "GB",
@@ -207,6 +206,11 @@ export default {
             dialogMessage: "",
             dialogType: 1,
             rowData: null,
+        }
+    },
+    computed: {
+        no_data: {
+            get: function() { return this.$t('dashboard.drive.haventshared') }
         }
     },
     created() {
@@ -280,7 +284,7 @@ export default {
     methods: {
         selectFile() {
             var options = {
-                title: 'Please choose the sharing space',
+                title: this.$t('dashboard.drive.choosesharing'),
                 properties: ['openDirectory']
             }
             var that = this;
@@ -291,10 +295,11 @@ export default {
             });
         },
         addShare() {
+            let that = this;
             if (!this.addSharePop.file_path) {
                 this.$message({
                     type: 'info',
-                    message: 'Please choose the sharing space'
+                    message: that.$t('dashboard.drive.choosesharing')
                 });
                 return;
             }

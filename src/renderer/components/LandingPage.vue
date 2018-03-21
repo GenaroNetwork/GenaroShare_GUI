@@ -185,16 +185,16 @@
               data.shared = ''
               data.bridges = (() => {
                 if (share.meta.farmerState.bridgesConnectionStatus === 0) {
-                  return 'Disconnected'
+                  return this2.$t('dashboard.drive.disconnected')
                 }
                 if (share.meta.farmerState.bridgesConnectionStatus === 1) {
-                  return 'Connecting'
+                  return this2.$t('dashboard.drive.connecting')
                 }
                 if (share.meta.farmerState.bridgesConnectionStatus === 2) {
-                  return 'Confirming'
+                  return this2.$t('dashboard.drive.confirming')
                 }
                 if (share.meta.farmerState.bridgesConnectionStatus === 3) {
-                  return 'Connected'
+                  return this2.$t('dashboard.drive.connected')
                 }
               })()
               data.allocs = share.meta.farmerState.spaceUsed + '(' + share.meta.farmerState.percentUsed + '%)'
