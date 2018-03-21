@@ -50,7 +50,9 @@ exports.default = {
     done: '完成',
     choose: '请选择',
     close: '关闭',
-    error: '错误'
+    error: '错误',
+    confirm: '确定',
+    cancel: '取消',
   },
   dashboard: {
     myfiles: {

@@ -50,7 +50,9 @@ exports.default = {
     done: 'Done',
     choose: 'Please choose',
     close: 'Close',
-    error: 'Error'
+    error: 'Error',
+    confirm: 'confirm',
+    cancel: 'cancel',
   },
   dashboard: {
     myfiles: {

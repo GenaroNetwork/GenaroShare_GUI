@@ -19,7 +19,7 @@
         "postinstall": "electron-builder install-app-deps"
     },
     "build": {
-        "productName": "Genaro Share",
+        "productName": "Genaro Sharer",
         "appId": "org.simulatedgreg.electron-vue",
         "directories": {
             "output": "build"
