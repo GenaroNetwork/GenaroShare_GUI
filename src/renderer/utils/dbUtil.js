@@ -3,7 +3,6 @@ const path = require('path')
 const os = require('os')
 const low = require('lowdb')
 const FileSync = require('lowdb/adapters/FileSync')
-const keytar = require('keytar')
 const { encryptText2Json, decryptJson2Text } = require('./encryptUtil')
 
 var isFirstTime = false
@@ -86,37 +85,6 @@ function taskListClear() {
 
 function saveCredentials(username, password) {
     db.set('username', username).write()
-    // keytar.setPassword(KEYCHAIN_LOGIN, username, password).then(() => {
-    //     console.log('Credentials saved to keychain')
-    // })
-}
-
-function getCredentials() {
-    return new Promise((resolve, reject) => {
-        const account = db.get('username').value()
-        if (account) {
-            keytar.getPassword(KEYCHAIN_LOGIN, account).then((password) => {
-                resolve({ account, password })
-            }).catch(() => {
-                console.error('getCredentials from keyChain error!')
-                resolve(null)
-            })
-        } else {
-            resolve(null)
-        }
-    })
-}
-
-function deleteCredentials() {
-    const account = db.get('username').value()
-    db
-        .set('username', null)
-        .set('encryptionKey', null)
-        .set('tasks', null)
-        .write();
-    if (!account) return;
-    keytar.deletePassword(KEYCHAIN_ENCRYPTIONKEY, account);
-    return keytar.deletePassword(KEYCHAIN_LOGIN, account);
 }
 
 function saveEncryptionKey(key, password) {
@@ -146,8 +114,6 @@ export {
     addHistory,
     removeHistoryById,
     saveCredentials,
-    getCredentials,
-    deleteCredentials,
     saveEncryptionKey,
     getEncryptionKey,
     taskListGet,

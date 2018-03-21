@@ -30,13 +30,16 @@
         </el-dialog>
 
         <div class="layout-header">
-            <el-popover ref="popover" placement="bottom-end" trigger="click" v-model="add_share_pop_visible">
+            <el-popover ref="popover" placement="bottom-end" trigger="click" v-model="addSharePop.visible">
                 <div>
                     <h3>Drive Location</h3>
-                    <p class="input-style" @click="selectFile">{{file_path}}</p>
+                    <p class="input-style" @click="selectFile">
+                        <span v-if="addSharePop.file_path">{{addSharePop.file_path}}</span>
+                        <span v-if="!addSharePop.file_path">Please select sharing directory</span>
+                    </p>
                     <h3 style="margin-top:20px">Sharing Size</h3>
-                    <el-input v-model="share_size">
-                        <el-select v-model="select_unit" slot="append" style="width: 70px;">
+                    <el-input v-model="addSharePop.share_size">
+                        <el-select v-model="addSharePop.select_unit" slot="append" style="width: 70px;">
                             <el-option value="GB">GB</el-option>
                             <el-option value="TB">TB</el-option>
                         </el-select>
@@ -90,8 +93,11 @@
                             <br/>
                             <el-button type="text" @click="stopShare(scope.row)">Stop</el-button>
                             <br/>
-                            <el-button type="text" @click="deleteShare(scope.row)">Delete
-                            </el-button>
+                            <el-button type="text" @click="deleteShare(scope.row)">Delete</el-button>
+                            <br/>
+                            <el-button type="text" @click="showLog(scope.row)">Show Log</el-button>
+                            <br/>
+                            <el-button type="text" @click="openConfig(scope.row)">Open Config</el-button>
                         </div>
                     </el-popover>
                     <el-switch v-model="scope.row.statusSwitch" @change="buttonSwitch(scope.row)" style="margin-right: 15px;"></el-switch>
@@ -149,10 +155,10 @@
 }
 </style>
 <script>
-import Share from "../share/share";
+import * as share from "../../../lib/share";
 import { web3 } from "../../../wallet/web3Util";
-let share = new Share;
-console.log(share);
+const prettyms = require('pretty-ms')
+
 const { dialog } = require('electron').remote;
 export default {
     data() {
@@ -181,12 +187,13 @@ export default {
                 }]
             },
             driversData: [],
-            connectId: "",
             no_data: "You have not shared storage space, hurry up and share it ...",
-            select_unit: "GB",
-            share_size: '1',
-            file_path: 'Please choose the sharing space',
-            add_share_pop_visible: false,
+            addSharePop: {
+                visible: false,
+                select_unit: "GB",
+                share_size: 100,
+                file_path: null,
+            },
             more_pop_visible: false,
             dialogVisible: false,
             dialogMessage: "",
@@ -195,42 +202,99 @@ export default {
         }
     },
     created() {
-        share.showStatus((err, datas, connectId) => {
+        function _convertData(shares) {
+            let datas = [];
+            let connectId = "";
+            shares.forEach(share => {
+                let data = {};
+                data.id = share.id;
+                data.location = share.config.storagePath;
+                data.shareBasePath = share.config.shareBasePath;
+                data.spaceUsed = share.meta.farmerState.spaceUsed == '...' ? "0KB" : share.meta.farmerState.spaceUsed;
+                data.storageAllocation = share.config.storageAllocation;
+                data.percentUsed = share.meta.farmerState.percentUsed == '...' ? 0 : share.meta.farmerState.percentUsed;
+                data.time = prettyms(share.meta.uptimeMs);
+                data.peers = share.meta.farmerState.totalPeers;
+                data.contractCount = share.meta.farmerState.contractCount;
+                data.dataReceivedCount = share.meta.farmerState.dataReceivedCount;
+                data.allocs = data.contractCount + '(' + data.dataReceivedCount + 'received)';
+                data.bridges = share.meta.farmerState.bridgesConnectionStatus;
+                switch (data.bridges) {
+                    case 0:
+                        data.bridgesText = 'Disconnected';
+                        data.bridgesColor = '#FD4B24';
+                        break;
+                    case 1:
+                        data.bridgesText = 'Connecting';
+                        data.bridgesColor = '#FD4B24';
+                        break;
+                    case 2:
+                        data.bridgesText = 'Confirming';
+                        data.bridgesColor = '#FD4B24';
+                        break;
+                    case 3:
+                        data.bridgesText = 'Connected';
+                        data.bridgesColor = '#31A63B';
+                        break;
+                }
+
+                data.status = share.state;
+                switch (data.status) {
+                    case 0:
+                        data.statusSwitch = false;
+                        break;
+                    case 1:
+                        data.statusSwitch = true;
+                        connectId = share.id;
+                        break;
+                    case 2:
+                        data.statusSwitch = false;
+                        break;
+                }
+                data.delta = share.meta.farmerState.ntpStatus ? share.meta.farmerState.ntpStatus.delta : 9999;
+                data.show = false;
+                // data.listenPort = share.meta.farmerState.portStatus.listenPort;
+
+                datas.push(data);
+            })
+            return datas
+        }
+        share.shareEventEmitter.on('statusUpdate', statuses => {
+            console.log('share status update')
+            console.log(statuses)
+            let datas = _convertData(statuses)
             if (this.more_pop_visible) return;
             if (datas) {
                 this.driversData = datas;
-                this.connectId = connectId;
             }
-        });
+        })
     },
     methods: {
         selectFile() {
             var options = {
                 title: 'Please choose the sharing space',
-                defaultPath: "share"
+                properties: ['openDirectory']
             }
             var that = this;
-            dialog.showSaveDialog(options, function (res) {
-                if (!res) {
-                    that.file_path = 'Please choose the sharing space';
-                    return;
+            dialog.showOpenDialog(options, function (res) {
+                if (res && res[0]) {
+                    that.addSharePop.file_path = res[0];
                 }
-                that.file_path = res;
             });
         },
         addShare() {
-            if (this.file_path.indexOf("Please") > -1) {
+            if (!this.addSharePop.file_path) {
                 this.$message({
                     type: 'info',
                     message: 'Please choose the sharing space'
                 });
                 return;
             }
-            share.addNewConfig(this.share_size, this.select_unit, this.file_path);
-            this.add_share_pop_visible = false;
+            share.create(this.addSharePop.share_size, this.addSharePop.select_unit, this.addSharePop.file_path);
+            this.addSharePop.visible = false;
         },
         cancelShare() {
-            this.add_share_pop_visible = false;
+            this.addSharePop.visible = false;
         },
         restartShare(row) {
             this.dialogVisible = true;
@@ -250,6 +314,12 @@ export default {
             this.dialogType = 3;
             this.rowData = row;
         },
+        showLog(row) {
+            share.openLogFolder()
+        },
+        openConfig(row) {
+            share.openConfig(row.id)
+        },
         handleDialog() {
             var row = this.rowData;
             if (row == null) {
@@ -257,23 +327,16 @@ export default {
             }
             switch (this.dialogType) {
                 case 1:
-                    if (this.connectId != "") {
-                        this.$message({
-                            type: 'info',
-                            message: 'You can only connect one node at one time, please stop ' + this.connectId + ' first.'
-                        });
-                        return
-                    }
                     row.show = false;
-                    share.restartShare(row.id);
+                    share.restart(row.id);
                     break;
                 case 2:
                     row.show = false;
-                    share.stopShare(row.id);
+                    share.stop(row.id);
                     break;
                 case 3:
                     row.show = false;
-                    share.deleteShare(row.id, row.shareBasePath);
+                    share.destory(row.id);
                     break;
             }
             this.dialogVisible = false;

@@ -242,51 +242,6 @@ async function generateSignedApproveTx(myAddr, password, amount, gas, gasLimit) 
     return rawTrans;
 }
 
-async function submitAddress(user, address, password) {
-    const secp256k1 = require('secp256k1')
-    const createKeccakHash = require('keccak')
-    const rawWallet = await loadRawWallet(address, password)
-    const prikBuf = rawWallet.getPrivateKey()
-    const pubkBuf = rawWallet.getPublicKey()
-    const pubkString = rawWallet.getPublicKeyString()
-
-    let content = {
-        user, address
-    }
-    const message = JSON.stringify(content)
-    const msgHash = createKeccakHash('keccak256').update(message).digest()
-    const signObj = secp256k1.sign(msgHash, prikBuf)
-    const signature = signObj.signature.toString('hex')
-    const recover = signObj.recovery
-    /**
-        const sigObj = secp256k1.sign(msg, privKey)
-
-        // verify the signature
-        console.log(secp256k1.verify(msg, sigObj.signature, pubKey))
-     */
-
-    let req = {
-        message,
-        sign: {
-            signature,
-            recover
-        } //signature of content
-    }
-
-    // send to server http://47.100.33.60:8080/users/simon@tedxsuzhou.com/payment
-    const url = BRIDGE_API_URL + `/users/${user}/payment`
-    axios.defaults.adapter = require('axios/lib/adapters/http')
-    const result = await axios.post(url, req)
-    // server verify
-    // calculate hash in same way:
-    if (result && result.data && result.data.wallet === address) {
-        console.log(result)
-        return result
-    } else {
-        throw ('unable to submit wallet address')
-    }
-
-}
 export default {
     loadWallet,
     loadRawWallet,
@@ -302,7 +257,6 @@ export default {
     exportV3Json,
     loadFirstWallet,
     loadWalletFromAddr,
-    submitAddress,
     updateWalletName,
     clearWallets,
 }
