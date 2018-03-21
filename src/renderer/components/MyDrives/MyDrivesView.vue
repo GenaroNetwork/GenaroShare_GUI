@@ -303,7 +303,8 @@ export default {
                 });
                 return;
             }
-            share.create(this.addSharePop.share_size, this.addSharePop.select_unit, this.addSharePop.file_path);
+            let nodeId = share.create(this.addSharePop.share_size, this.addSharePop.select_unit, this.addSharePop.file_path);
+            share.start(nodeId)
             this.addSharePop.visible = false;
         },
         cancelShare() {
