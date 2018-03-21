@@ -9,13 +9,21 @@
                 <el-form-item label="quantity">
                     <el-input v-model="setWallet.quantity" type="number" min="5000" placeholder="set the quantity for stake, and will get a respond of size of sharing"></el-input>
                 </el-form-item>
-                <el-form-item label="option">
-                    <el-select v-model="setWallet.option" placeholder="set the option for months to be shared">
+                <el-form-item>
+                    <slot name="label">option
+                        <span style="padding-left: .5rem; color: #aaa;">Set the option for months to be shared</span>
+                        <br/>
+                    </slot>
+                    <el-select v-model="setWallet.option" placeholder="choose duration">
                         <el-option v-for="(option, index) of setWallet.options" :key="`option-${index}`" :label="option.label" :value="option.value"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="choose wallet">
-                    <el-select v-model="setWallet.wallet" placeholder="Choose a wallet as recipient">
+                <el-form-item>
+                    <slot name="label">wallet
+                        <span style="padding-left: .5rem; color: #aaa;">Choose a wallet as recipient</span>
+                        <br/>
+                    </slot>
+                    <el-select v-model="setWallet.wallet" placeholder="choose a wallet">
                         <el-option v-for="(wallet, index) of setWallet.wallets" :key="`wallet-${index}`" :label="wallet.name" :value="wallet.address"></el-option>
                     </el-select>
                 </el-form-item>
@@ -24,8 +32,8 @@
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="setRecipientDialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="setRecipient()">确 定</el-button>
+                <el-button @click="setRecipientDialogVisible = false">{{ this.$t("common.cancel") }}</el-button>
+                <el-button type="primary" @click="setRecipient()">{{ this.$t("common.confirm") }}</el-button>
             </span>
         </el-dialog>
 
@@ -58,8 +66,8 @@
         <el-dialog title="Notice" :visible.sync="dialogVisible" width="30%">
             <span>{{dialogMessage}}</span>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="handleDialog">确 定</el-button>
+                <el-button @click="dialogVisible = false">{{ this.$t("common.cancel") }}</el-button>
+                <el-button type="primary" @click="handleDialog">{{ this.$t("common.confirm") }}</el-button>
             </span>
         </el-dialog>
         <el-table :data="driversData" :empty-text="no_data">
