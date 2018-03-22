@@ -29,7 +29,10 @@
     <div class="colcontainer">
         <div class="layout-favourites-enum">
             <el-menu default-active="0" :router="true">
-                <el-menu-item index="0" route="/my-drives"><img :src="drive_icon" class="icon">{{ $t("dashboard.drive.mydrives") }}</el-menu-item>
+                <el-menu-item index="0" route="/my-drives">
+                    <i class="material-icons">storage</i>
+                    <span>{{ $t("dashboard.drive.mydrives") }}</span>
+                </el-menu-item>
                 <el-submenu index="1" default-active="1-0">
                     <template slot="title">
                         <i class="material-icons">account_balance_wallet</i>

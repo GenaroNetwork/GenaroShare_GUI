@@ -189,6 +189,7 @@ exports.default = {
       drivelocation: '驱动器位置',
       setrecipient: '设置接收方',
       restart: '重启',
+      start: '启动',
       stop: '停止',
       notice: '注意',
       sharingsize: '分享大小',

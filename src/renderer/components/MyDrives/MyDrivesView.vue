@@ -73,6 +73,10 @@
         <el-table :data="driversData" :empty-text="no_data">
             <el-table-column :label="$t('dashboard.drive.driveid')" prop="id" :show-overflow-tooltip="true">
             </el-table-column>
+            <el-table-column>
+                <template slot-scope="scope">
+                </template>
+            </el-table-column>
             <el-table-column :label="$t('dashboard.drive.location')" prop="location" :show-overflow-tooltip="true">
             </el-table-column>
             <el-table-column :label="$t('dashboard.drive.shared')">
@@ -99,7 +103,8 @@
                             <br/>
                             <el-button type="text" @click="restartShare(scope.row)">{{ $t("dashboard.drive.restart") }}</el-button>
                             <br/>
-                            <el-button type="text" @click="stopShare(scope.row)">{{ $t("dashboard.drive.stop") }}</el-button>
+                            <el-button type="text" v-if="scope.row.statusSwitch" @click="stopShare(scope.row)">{{ $t("dashboard.drive.stop") }}</el-button>
+                            <el-button type="text" v-else @click="stopShare(scope.row)">{{ $t("dashboard.drive.start") }}</el-button>
                             <br/>
                             <el-button type="text" @click="deleteShare(scope.row)">{{ $t("common.delete") }}</el-button>
                             <br/>
@@ -108,7 +113,6 @@
                             <el-button type="text" @click="openConfig(scope.row)">Open Config</el-button>
                         </div>
                     </el-popover>
-                    <el-switch v-model="scope.row.statusSwitch" @change="buttonSwitch(scope.row)" style="margin-right: 15px;"></el-switch>
                     <el-button type="text" @click="morePop(scope.row)" v-popover:popover{{$index}}>
                         <i class="el-icon-more"></i>
                     </el-button>
@@ -210,13 +214,14 @@ export default {
     },
     computed: {
         no_data: {
-            get: function() { return this.$t('dashboard.drive.haventshared') }
+            get: function () { return this.$t('dashboard.drive.haventshared') }
         }
     },
     created() {
         function _convertData(shares) {
             let datas = [];
             let connectId = "";
+            console.log(shares);
             shares.forEach(share => {
                 let data = {};
                 data.id = share.id;
@@ -271,10 +276,9 @@ export default {
             })
             return datas
         }
-        share.shareEventEmitter.on('statusUpdate', statuses => {
-            console.log('share status update')
-            console.log(statuses)
-            let datas = _convertData(statuses)
+        share.shareEventEmitter.on('statusUpdate', status => {
+            console.log(status)
+            let datas = _convertData(status)
             if (this.more_pop_visible) return;
             if (datas) {
                 this.driversData = datas;

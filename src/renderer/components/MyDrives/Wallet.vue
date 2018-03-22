@@ -435,7 +435,7 @@ export default {
     async created() {
         const address = this.$route.params.walletAddress;
         this.$store.dispatch("loadTransactions");
-        this.$store.dispatch("walletListSetCurrent", {address:this.$store.getters.currentWallet.address})
+        this.$store.dispatch("walletListSetCurrent", { address: this.$store.getters.currentWallet.address })
     },
     mounted() {
         // init balance
@@ -545,11 +545,6 @@ export default {
                 ],
                 password: [
                     { required: true, message: this.$t("common.inputpwd"), trigger: "blur" },
-                    {
-                        min: 6,
-                        message: this.$t("common.pwdlength"),
-                        trigger: "blur"
-                    }
                 ]
             }
         };
@@ -597,7 +592,7 @@ export default {
                 this.$message(this.$t("dashboard.mywallet.transactionsubmitted"));
             } catch (e) {
                 if (e.messgae === "Key derivation failed - possibly wrong passphrase") this.passwordError = "Wrong Password.";
-                else this.$message.error(this.$t("dashboard.mywallet.createtransactionerr", { error:e.message }));
+                else this.$message.error(this.$t("dashboard.mywallet.createtransactionerr", { error: e.message }));
             }
         },
         changeWallet(address) {
