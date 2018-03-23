@@ -71,11 +71,13 @@
             </span>
         </el-dialog>
         <el-table :data="driversData" :empty-text="no_data">
-            <el-table-column :label="$t('dashboard.drive.driveid')" prop="id" :show-overflow-tooltip="true">
-            </el-table-column>
-            <el-table-column>
+            <el-table-column :label="$t('dashboard.drive.status')" width="70px">
                 <template slot-scope="scope">
+                    <div class="status-light green" v-if="!scope.row.statusLight"></div>
+                    <div class="status-light red" v-else></div>
                 </template>
+            </el-table-column>
+            <el-table-column :label="$t('dashboard.drive.driveid')" prop="id" :show-overflow-tooltip="true">
             </el-table-column>
             <el-table-column :label="$t('dashboard.drive.location')" prop="location" :show-overflow-tooltip="true">
             </el-table-column>
@@ -95,7 +97,7 @@
             </el-table-column>
             <el-table-column :label="$t('dashboard.drive.bridges')" prop="bridgesText">
             </el-table-column>
-            <el-table-column :label="$t('dashboard.drive.status')">
+            <el-table-column>
                 <template slot-scope="scope">
                     <el-popover ref="popover{{$index}}" placement="bottom-end" v-model="scope.row.show">
                         <div style="width:150px;text-align:center;">
@@ -121,7 +123,7 @@
         </el-table>
     </div>
 </template>
-<style>
+<style scoped>
 .layout-header {
   height: 80px;
 }
@@ -164,6 +166,19 @@
   -moz-border-radius: 50px;
   -webkit-border-radius: 50px;
   border-radius: 50px;
+}
+
+.status-light {
+  height: 10px;
+  width: 10px;
+  border-radius: 50%;
+  margin: 0 10px;
+}
+.status-light.red {
+  background: #ff6167;
+}
+.status-light.green {
+  background: #37b047;
 }
 </style>
 <script>
@@ -221,7 +236,6 @@ export default {
         function _convertData(shares) {
             let datas = [];
             let connectId = "";
-            console.log(shares);
             shares.forEach(share => {
                 let data = {};
                 data.id = share.id;
@@ -236,6 +250,7 @@ export default {
                 data.dataReceivedCount = share.meta.farmerState.dataReceivedCount;
                 data.allocs = data.contractCount + '(' + data.dataReceivedCount + 'received)';
                 data.bridges = share.meta.farmerState.bridgesConnectionStatus;
+                data.statusLight = share.meta.farmerState.portStatus.connectionStatus;
                 switch (data.bridges) {
                     case 0:
                         data.bridgesText = 'Disconnected';
@@ -277,7 +292,6 @@ export default {
             return datas
         }
         share.shareEventEmitter.on('statusUpdate', status => {
-            console.log(status)
             let datas = _convertData(status)
             if (this.more_pop_visible) return;
             if (datas) {
