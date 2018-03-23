@@ -1,7 +1,7 @@
 <template>
     <div>
 
-        <el-dialog title="set recipient wallet" :visible.sync="setRecipientDialogVisible" width="600px" :center="true" v-loading="setRecipientDialogLoading">
+        <el-dialog title="stake wallet" :visible.sync="setRecipientDialogVisible" width="600px" :center="true" v-loading="setRecipientDialogLoading">
             <el-form v-model="setWallet" label-position="top" size="small">
                 <el-form-item label="Driver ID">
                     <el-input v-model="setWallet.nodeId" :disabled="true" type="string"></el-input>
@@ -20,7 +20,7 @@
                 </el-form-item>
                 <el-form-item>
                     <slot name="label">wallet
-                        <span style="padding-left: .5rem; color: #aaa;">Choose a wallet as recipient</span>
+                        <span style="padding-left: .5rem; color: #aaa;">Choose a wallet to stake</span>
                         <br/>
                     </slot>
                     <el-select v-model="setWallet.wallet" placeholder="choose a wallet">

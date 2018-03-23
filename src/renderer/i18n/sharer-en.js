@@ -187,7 +187,7 @@ exports.default = {
       choosesharing: 'Please choose the sharing space',
       selectsharing: 'Please select sharing directory',
       drivelocation: 'Drive Location',
-      setrecipient: 'Set recipient',
+      setrecipient: 'Stake',
       restart: 'Restart',
       start: 'Start',
       stop: 'Stop',
