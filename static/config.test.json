@@ -16,7 +16,7 @@
   "rpcAddress": "127.0.0.1",
   "rpcPort": 9002,
   "doNotTraverseNat": false,
-  "maxTunnels": 0,
+  "maxTunnels": 3,
   "maxConnections": 150,
   "tunnelGatewayRange": {
     "min": 4001,
