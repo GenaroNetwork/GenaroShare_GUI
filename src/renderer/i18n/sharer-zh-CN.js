@@ -187,7 +187,7 @@ exports.default = {
       choosesharing: '请选择待分享空间',
       selectsharing: '请选择待分享目录',
       drivelocation: '驱动器位置',
-      setrecipient: '设置接收方',
+      setrecipient: '押注(stake)',
       restart: '重启',
       start: '启动',
       stop: '停止',
