@@ -1,6 +1,6 @@
 {
     "name": "eden-share-gui",
-    "version": "0.0.0",
+    "version": "0.0.1",
     "author": "Simon",
     "description": "Share hard drive to Genaro network",
     "license": "null",
@@ -20,9 +20,9 @@
     },
     "build": {
         "productName": "Genaro Sharer",
-        "appId": "org.simulatedgreg.electron-vue",
+        "appId": "network.genaro.sharer",
         "directories": {
-            "output": "build"
+            "output": "built"
         },
         "files": [
             "dist/electron/**/*"
