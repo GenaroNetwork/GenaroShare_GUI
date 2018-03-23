@@ -2,9 +2,8 @@
   <div id="wrapper">
     <h1>Welcome to Eden Share</h1>
     <div id="newconfig" v-if="!hasConfig">
-      Add new share config:<br>
-      How much GB storage you want to share? <br>
-      <input type="number"  v-model="shareSize" placeholder="please specify a positive number"/> GB <br>
+      Add new share config:<br> How much GB storage you want to share? <br>
+      <input type="number" v-model="shareSize" placeholder="please specify a positive number" /> GB <br>
       <button v-on:click.prevent="addNewConfig()">Start my share</button>
     </div>
     <div id="status" v-if="hasConfig">
@@ -72,159 +71,158 @@
 </template>
 
 <script>
-  import SystemInformation from './LandingPage/SystemInformation'
-  import dnode from 'dnode'
-  import { createConfig, hasConfig, removeConfig, startShare } from '../../lib/share'
-  const prettyms = require('pretty-ms')
+import SystemInformation from './LandingPage/SystemInformation'
+import dnode from 'dnode'
+import { createConfig, hasConfig, removeConfig, startShare } from '../../lib/share'
+const prettyms = require('pretty-ms')
 
-  var data = {
-    shareId: '',
-    path: '',
-    status: '',
-    storageAllocation: '',
-    uptimeReadable: '',
-    restarts: '',
-    peers: '',
-    contractCount: 0,
-    dataReceivedCount: 0,
-    delta: '',
-    listenPort: '',
-    connectionType: '',
-    shared: '',
-    bridges: '',
-    allocs: '',
-    rpc: {},
-    hasConfig: false,
-    shareSize: 0
-  }
-  export default {
-    name: 'landing-page',
-    components: { SystemInformation },
-    methods: {
-      open (link) {
-        this.$electron.shell.openExternal(link)
-      },
-      start () {
-        this.restart()
-      },
-      stop () {
-        this.rpc.stop(this.shareId, (err) => {
-          if (err) {
-            console.log(err)
-          }
-        })
-      },
-      restart () {
-        this.rpc.restart(this.shareId, (err) => {
-          if (err) {
-            console.log(err)
-          }
-        })
-      },
-      destory () {
-        this.rpc.destroy(this.shareId, (err) => {
-          if (err) {
-            console.log(err)
-          } else {
-            removeConfig()
-            window.location.reload()
-          }
-        })
-      },
-      addNewConfig () {
-        let size = parseInt(this.shareSize)
-        if (size <= 0) {
-          alert('please specify a negtive number')
-          return
+var data = {
+  shareId: '',
+  path: '',
+  status: '',
+  storageAllocation: '',
+  uptimeReadable: '',
+  restarts: '',
+  peers: '',
+  contractCount: 0,
+  dataReceivedCount: 0,
+  delta: '',
+  listenPort: '',
+  connectionType: '',
+  shared: '',
+  bridges: '',
+  allocs: '',
+  rpc: {},
+  hasConfig: false,
+  shareSize: 0
+}
+export default {
+  name: 'landing-page',
+  components: { SystemInformation },
+  methods: {
+    open(link) {
+      this.$electron.shell.openExternal(link)
+    },
+    start() {
+      this.restart()
+    },
+    stop() {
+      this.rpc.stop(this.shareId, (err) => {
+        if (err) {
+          console.log(err)
         }
-        alert('You will share ' + this.shareSize + 'GB space of your device')
-        let configPath = createConfig(this.shareSize)
-        if (configPath) {
-          startShare()
-          this.hasConfig = true
-          alert('Config created at ' + configPath + ', now starting service..')
-          console.log(configPath)
-          this.showStatus()
+      })
+    },
+    restart() {
+      this.rpc.restart(this.shareId, (err) => {
+        if (err) {
+          console.log(err)
         }
-      },
-      showStatus () {
-        let this2 = this
-        dnode.connect(45015, (rpc) => {
-          console.log('web connected 45015')
-          this2.rpc = rpc
-          function showData () {
-            rpc.status((err, shares) => {
-              if (shares.length === 0) {
-                return
-              }
-              const share = shares[0]
-              console.log(err)
-              console.log(shares)
-              data.path = share.config.storagePath
-              data.storageAllocation = share.config.storageAllocation
-              data.shareId = share.id
-              data.status = (() => {
-                if (share.state === 0) {
-                  return 'Stopped'
-                } else if (share.state === 1) {
-                  return 'Running'
-                } else if (share.state === 2) {
-                  return 'Errored'
-                }
-              })()
-
-              data.uptimeReadable = prettyms(share.meta.uptimeMs)
-
-              data.restarts = share.meta.numRestarts
-              data.peers = share.meta.farmerState.totalPeers
-              data.delta = share.meta.farmerState.ntpStatus ? share.meta.farmerState.ntpStatus.delta : 9999
-              data.listenPort = share.meta.farmerState.portStatus.listenPort
-              data.connectionType = share.meta.farmerState.portStatus.connectionType
-              data.contractCount = share.meta.farmerState.contractCount
-              data.dataReceivedCount = share.meta.farmerState.dataReceivedCount
-              data.shared = ''
-              data.bridges = (() => {
-                if (share.meta.farmerState.bridgesConnectionStatus === 0) {
-                  return this2.$t('dashboard.drive.disconnected')
-                }
-                if (share.meta.farmerState.bridgesConnectionStatus === 1) {
-                  return this2.$t('dashboard.drive.connecting')
-                }
-                if (share.meta.farmerState.bridgesConnectionStatus === 2) {
-                  return this2.$t('dashboard.drive.confirming')
-                }
-                if (share.meta.farmerState.bridgesConnectionStatus === 3) {
-                  return this2.$t('dashboard.drive.connected')
-                }
-              })()
-              data.allocs = share.meta.farmerState.spaceUsed + '(' + share.meta.farmerState.percentUsed + '%)'
-            })
-          }
-          setInterval(() => {
-            showData()
-          }, 3000)
-        })
-      },
-      refresh () {
-        if (hasConfig()) {
-          this.hasConfig = true
-          this.showStatus()
+      })
+    },
+    destory() {
+      this.rpc.destroy(this.shareId, (err) => {
+        if (err) {
+          console.log(err)
         } else {
-          this.hasConfig = false
+          removeConfig()
+          window.location.reload()
         }
+      })
+    },
+    addNewConfig() {
+      let size = parseInt(this.shareSize)
+      if (size <= 0) {
+        alert('please specify a negtive number')
+        return
+      }
+      alert('You will share ' + this.shareSize + 'GB space of your device')
+      let configPath = createConfig(this.shareSize)
+      if (configPath) {
+        startShare()
+        this.hasConfig = true
+        alert('Config created at ' + configPath + ', now starting service..')
+        console.log(configPath)
+        this.showStatus()
       }
     },
-    data () {
-      return data
-    },
-    mounted: function () {
-      var this2 = this
-      this.$nextTick(function () {
-        this2.refresh()
+    showStatus() {
+      dnode.connect(45015, rpc => {
+        console.log('web connected 45015')
+        this.rpc = rpc
+        function showData() {
+          rpc.status((err, shares) => {
+            if (shares.length === 0) {
+              return
+            }
+            const share = shares[0]
+            console.log(err)
+            console.log(shares)
+            data.path = share.config.storagePath
+            data.storageAllocation = share.config.storageAllocation
+            data.shareId = share.id
+            data.status = (() => {
+              if (share.state === 0) {
+                return 'Stopped'
+              } else if (share.state === 1) {
+                return 'Running'
+              } else if (share.state === 2) {
+                return 'Errored'
+              }
+            })()
+
+            data.uptimeReadable = prettyms(share.meta.uptimeMs)
+
+            data.restarts = share.meta.numRestarts
+            data.peers = share.meta.farmerState.totalPeers
+            data.delta = share.meta.farmerState.ntpStatus ? share.meta.farmerState.ntpStatus.delta : 9999
+            data.listenPort = share.meta.farmerState.portStatus.listenPort
+            data.connectionType = share.meta.farmerState.portStatus.connectionType
+            data.contractCount = share.meta.farmerState.contractCount
+            data.dataReceivedCount = share.meta.farmerState.dataReceivedCount
+            data.shared = ''
+            data.bridges = (() => {
+              if (share.meta.farmerState.bridgesConnectionStatus === 0) {
+                return this.$t('dashboard.drive.disconnected')
+              }
+              if (share.meta.farmerState.bridgesConnectionStatus === 1) {
+                return this.$t('dashboard.drive.connecting')
+              }
+              if (share.meta.farmerState.bridgesConnectionStatus === 2) {
+                return this.$t('dashboard.drive.confirming')
+              }
+              if (share.meta.farmerState.bridgesConnectionStatus === 3) {
+                return this.$t('dashboard.drive.connected')
+              }
+            })()
+            data.allocs = share.meta.farmerState.spaceUsed + '(' + share.meta.farmerState.percentUsed + '%)'
+          })
+        }
+        setInterval(() => {
+          showData()
+        }, 3000)
       })
+    },
+    refresh() {
+      if (hasConfig()) {
+        this.hasConfig = true
+        this.showStatus()
+      } else {
+        this.hasConfig = false
+      }
     }
+  },
+  data() {
+    return data
+  },
+  mounted: function () {
+    this.$nextTick(() => {
+      this.refresh()
+    })
   }
+}
 </script>
 
 <style>
+
 </style>

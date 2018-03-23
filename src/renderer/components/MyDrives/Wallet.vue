@@ -586,6 +586,7 @@ export default {
             } catch (e) { }
         },
         async pay() {
+            this.payFormPop = false;
             try {
                 await this.$refs.payOption.validate();
                 await this.$store.dispatch("walletListPayByCurrent", this.payOption);

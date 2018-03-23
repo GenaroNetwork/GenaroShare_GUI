@@ -1,5 +1,28 @@
 <template>
     <div>
+        <el-dialog title="Your reward" :visible.sync="reward.showDialog" width="400px" :center="true" @open="reward.step = 0">
+            <div v-if="reward.step===0">
+                <el-row>
+                    <el-col :span="8">earnedGnx: </el-col>
+                    <el-col :span="16">{{ reward.earnedGnx }}</el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="8">gasGnx:</el-col>
+                    <el-col :span="16">{{ reward.gasGnx }}</el-col>
+                </el-row>
+            </div>
+            <div v-else-if="reward.step===1">
+                <el-col :span="8">hash:</el-col>
+                <el-col :span="16">
+                    <div class="txHash" @click="openRewardHash">{{ reward.hash }}</div>
+                </el-col>
+            </div>
+
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="reward.showDialog = false">关闭</el-button>
+                <el-button type="primary" @click="getReward" v-if="reward.step===0">提取</el-button>
+            </span>
+        </el-dialog>
 
         <el-dialog title="set recipient wallet" :visible.sync="setRecipientDialogVisible" width="600px" :center="true" v-loading="setRecipientDialogLoading">
             <el-form v-model="setWallet" label-position="top" size="small">
@@ -113,6 +136,8 @@
                             <el-button type="text" @click="showLog(scope.row)">Show Log</el-button>
                             <br/>
                             <el-button type="text" @click="openConfig(scope.row)">Open Config</el-button>
+                            <br/>
+                            <el-button type="text" @click="showReward(scope.row.id)">Show Reward</el-button>
                         </div>
                     </el-popover>
                     <el-button type="text" @click="morePop(scope.row)" v-popover:popover{{$index}}>
@@ -180,16 +205,35 @@
 .status-light.green {
   background: #37b047;
 }
+
+.txHash {
+  color: #3498db;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
 </style>
 <script>
 import * as share from "../../../lib/share";
-import { web3 } from "../../../wallet/web3Util";
+import { web3, EtherscanURL } from "../../../wallet/web3Util";
+import { shell } from "electron";
 const prettyms = require('pretty-ms')
+import dnode from "dnode";
 
 const { dialog } = require('electron').remote;
+
 export default {
     data() {
         return {
+            rpc: {},
+            reward: {
+                id: null,
+                showDialog: false,
+                step: 0,
+                earnedGnx: 0,
+                gasGnx: 0,
+                hash: null,
+            },
             setRecipientDialogVisible: false,
             setRecipientDialogLoading: false,
             setWallet: {
@@ -297,9 +341,42 @@ export default {
             if (datas) {
                 this.driversData = datas;
             }
-        })
+        });
+
+        dnode.connect(45015, rpc => {
+            this.rpc = rpc;
+        });
     },
     methods: {
+        showReward(nodeid) {
+            this.rpc.checkReward(nodeid, obj => {
+                if (obj instanceof Error) {
+                    this.$message.error(obj.message);
+                    return;
+                }
+                this.reward.id = nodeid;
+                this.reward.earnedGnx = obj.earnedGnx;
+                this.reward.gasGnx = obj.gasGnx;
+                this.reward.showDialog = true;
+            });
+        },
+        getReward(nodeid) {
+            this.rpc.getReward(nodeid, obj => {
+                if (obj instanceof Error) {
+                    this.$message.error(obj.message);
+                    return;
+                }
+                if (obj.error) {
+                    this.$message.error(obj.error);
+                    return;
+                }
+                this.reward.hash = obj.txHash;
+                this.reward.step = 1;
+            });
+        },
+        openRewardHash() {
+            shell.openExternal(EtherscanURL + this.reward.hash);
+        },
         selectFile() {
             var options = {
                 title: this.$t('dashboard.drive.choosesharing'),

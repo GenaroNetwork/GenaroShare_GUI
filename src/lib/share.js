@@ -9,34 +9,34 @@ const genaroshare = require('genaroshare-daemon')
 const os = require('os')
 const events = require('events');
 const shareEventEmitter = new events.EventEmitter();
-const {shell} = require('electron')
+const { shell } = require('electron')
 
 const RPC_PORT = 45015
 const BASE_PATH = path.join(os.homedir(), '.config/genaroshare')
 try {
   mkdirPSync(BASE_PATH)
   console.log(`config base path: ${BASE_PATH}`)
-} catch (error) {}
+} catch (error) { }
 const CONFIG_DIR = path.join(BASE_PATH, 'configs');
 try {
   mkdirPSync(CONFIG_DIR)
   console.log(`config path: ${CONFIG_DIR}`)
-} catch (error) {}
+} catch (error) { }
 const LOG_DIR = path.join(BASE_PATH, 'logs');
 try {
   mkdirPSync(LOG_DIR)
   console.log(`log path: ${LOG_DIR}`)
-} catch (error) {}
+} catch (error) { }
 
 const configIds = []
 function _initConfigs() {
   fs.readdirSync(CONFIG_DIR).forEach(file => {
     let fileobj = path.parse(file)
-    if(fileobj.ext === '.json' && fileobj.name.length === 40) {
+    if (fileobj.ext === '.json' && fileobj.name.length === 40) {
       console.log(`add config file: ${file}`)
       configIds.push(fileobj.name)
     }
-  })  
+  })
 }
 _initConfigs()
 function _getConfigPathById(nodeId) {
@@ -46,7 +46,7 @@ function _getConfigPathById(nodeId) {
   );
 }
 
-function _remove (nodeId) {
+function _remove(nodeId) {
   const configPath = _getConfigPathById(nodeId)
   fs.unlinkSync(configPath)
   console.log(`${configPath} deleted`)
@@ -58,7 +58,7 @@ function _remove (nodeId) {
  * @param {*} shareUnit 
  * @param {*} shareBasePath 
  */
-function create (shareSize, shareUnit, shareBasePath) {
+function create(shareSize, shareUnit, shareBasePath) {
   console.log(`create config with size: ${shareSize}${shareUnit}, path: ${shareBasePath}`)
   let returnedPath = false
   let configFileDescriptor
@@ -70,7 +70,7 @@ function create (shareSize, shareUnit, shareBasePath) {
   config.storagePath = shareBasePath
   try {
     mkdirPSync(shareBasePath)
-  } catch (err) {}
+  } catch (err) { }
 
   if (config.storagePath === undefined || config.storagePath === '') {
     storPath = path.join(sharePath, '/', nodeID)
@@ -105,25 +105,25 @@ function create (shareSize, shareUnit, shareBasePath) {
   return nodeID
 }
 
-function start (nodeId, cb) {
+function start(nodeId, cb) {
   dnode.connect(RPC_PORT, (rpc) => {
     const configPath = _getConfigPathById(nodeId)
     rpc.start(configPath, (err) => {
-      if(cb) cb(err)
+      if (cb) cb(err)
     })
   })
 }
 
-function startAll (cb) {
+function startAll(cb) {
   let errs = []
   let len = configIds.length
   configIds.forEach(nodeId => {
     start(nodeId, err => {
-      if(err) errs.push(err)
-      len --
-      if(cb) {
-        if(len === 0) {
-          if(errs.length > 0) {
+      if (err) errs.push(err)
+      len--
+      if (cb) {
+        if (len === 0) {
+          if (errs.length > 0) {
             cb(errs)
           } else {
             cb()
@@ -134,49 +134,49 @@ function startAll (cb) {
   })
 }
 
-function stop (nodeId, cb) {
+function stop(nodeId, cb) {
   dnode.connect(RPC_PORT, (rpc) => {
     rpc.stop(nodeId, err => {
-      if(cb) cb(err)
+      if (cb) cb(err)
     })
   })
 }
 
-function restart (nodeId, cb) {
+function restart(nodeId, cb) {
   dnode.connect(RPC_PORT, (rpc) => {
     rpc.restart(nodeId, err => {
-      if(cb) cb(err)
+      if (cb) cb(err)
     })
   })
 }
 
-function status (cb) {
+function status(cb) {
   dnode.connect(RPC_PORT, (rpc) => {
     rpc.status((err, statuses) => {
-      if(cb) cb(err, statuses)
+      if (cb) cb(err, statuses)
     })
   })
 }
 
-function destory (nodeId, cb) {
+function destory(nodeId, cb) {
   dnode.connect(RPC_PORT, (rpc) => {
     rpc.destroy(nodeId, err => {
       _remove(nodeId)
-      if(cb) cb(err)
+      if (cb) cb(err)
     })
   })
 }
 
-function openLogFolder () {
+function openLogFolder() {
   shell.showItemInFolder(LOG_DIR)
 }
 
-function openConfig (nodeId) {
+function openConfig(nodeId) {
   const configPath = _getConfigPathById(nodeId)
   shell.openItem(configPath)
 }
 // status watcher
-(()=>{
+(() => {
   setInterval(() => {
     status((err, statuses) => {
       shareEventEmitter.emit('statusUpdate', statuses)
@@ -194,5 +194,5 @@ export {
   startAll,
   shareEventEmitter,
   openLogFolder,
-  openConfig
+  openConfig,
 }
