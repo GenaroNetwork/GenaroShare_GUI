@@ -1,26 +1,32 @@
 <template>
     <div>
-        <el-dialog title="Your reward" :visible.sync="reward.showDialog" width="400px" :center="true" @open="reward.step = 0">
+        <el-dialog title="Your reward" :visible.sync="reward.showDialog" width="800px" :center="true" @open="reward.step = 0">
             <div v-if="reward.step===0">
                 <el-row>
-                    <el-col :span="8">earnedGnx: </el-col>
-                    <el-col :span="16">{{ reward.earnedGnx }}</el-col>
+                    <el-col :span="8">Your stake wallet: </el-col>
+                    <el-col :span="8">{{ reward.stakeWallet }}</el-col>
                 </el-row>
                 <el-row>
-                    <el-col :span="8">gasGnx:</el-col>
-                    <el-col :span="16">{{ reward.gasGnx }}</el-col>
+                    <el-col :span="8">You have earned: </el-col>
+                    <el-col :span="8">{{ reward.earnedGnx }} GNX</el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="8">The transfer fee will be:</el-col>
+                    <el-col :span="8">{{ reward.gasGnx }} GNX</el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="8">You will get :</el-col>
+                    <el-col :span="8">{{ reward.earnedGnx - reward.gasGnx > 0 ? reward.earnedGnx - reward.gasGnx : 0 }} GNX</el-col>
                 </el-row>
             </div>
             <div v-else-if="reward.step===1">
-                <el-col :span="8">hash:</el-col>
-                <el-col :span="16">
-                    <div class="txHash" @click="openRewardHash">{{ reward.hash }}</div>
-                </el-col>
+                <p>GNX transferring. Transaction hash: {{ reward.hash }}</p>
+                <div class="txHash" @click="openRewardHash">view in etherscan</div>
             </div>
 
             <span slot="footer" class="dialog-footer">
                 <el-button @click="reward.showDialog = false">关闭</el-button>
-                <el-button type="primary" @click="getReward" v-if="reward.step===0">提取</el-button>
+                <el-button type="primary" @click="getReward(reward.id)" v-if="reward.step===0">提取</el-button>
             </span>
         </el-dialog>
 
@@ -225,9 +231,9 @@ const { dialog } = require('electron').remote;
 export default {
     data() {
         return {
-            rpc: {},
             reward: {
                 id: null,
+                stakeWallet: null,
                 showDialog: false,
                 step: 0,
                 earnedGnx: 0,
@@ -342,28 +348,30 @@ export default {
                 this.driversData = datas;
             }
         });
-
-        dnode.connect(45015, rpc => {
-            this.rpc = rpc;
-        });
+        
     },
     methods: {
         showReward(nodeid) {
-            this.rpc.checkReward(nodeid, obj => {
-                if (obj instanceof Error) {
-                    this.$message.error(obj.message);
+            share.checkReward(nodeid, (err, obj) => {
+                if (err) {
+                    this.$message.error(err.message);
                     return;
                 }
                 this.reward.id = nodeid;
                 this.reward.earnedGnx = obj.earnedGnx;
+                this.reward.stakeWallet = obj.wallet;
                 this.reward.gasGnx = obj.gasGnx;
                 this.reward.showDialog = true;
             });
         },
         getReward(nodeid) {
-            this.rpc.getReward(nodeid, obj => {
-                if (obj instanceof Error) {
-                    this.$message.error(obj.message);
+            if (!this.reward.stakeWallet || this.reward.stakeWallet === '0x0000000000000000000000000000000000000000') {
+                this.$message.error('this node has not been staked');
+                return;
+            }
+            share.getReward(nodeid, (err, obj) => {
+                if (err) {
+                    this.$message.error(err.message);
                     return;
                 }
                 if (obj.error) {
