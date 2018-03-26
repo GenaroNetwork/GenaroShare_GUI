@@ -173,8 +173,8 @@ exports.default = {
         获取安装文件和Genaro Sharer使用说明.'
     },
     drive: {
-      mydrives: '我的驱动器',
-      adddrive: '+ 增加驱动器',
+      mydrives: '我的分享',
+      adddrive: '+ 增加分享配置',
       driveid: '编号',
       location: '位置',
       shared: '已分享',
@@ -186,7 +186,7 @@ exports.default = {
       haventshared: '您尚未分享存储空间，赶快分享吧...',
       choosesharing: '请选择待分享空间',
       selectsharing: '请选择待分享目录',
-      drivelocation: '驱动器位置',
+      drivelocation: '分享位置',
       setrecipient: '押注(stake)',
       restart: '重启',
       start: '启动',

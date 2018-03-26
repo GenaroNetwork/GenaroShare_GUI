@@ -167,6 +167,22 @@ function destory(nodeId, cb) {
   })
 }
 
+function checkReward(nodeId, cb) {
+  dnode.connect(RPC_PORT, (rpc) => {
+    rpc.checkReward(nodeId, (err, data) => {
+      if (cb) cb(err, data)
+    })
+  })
+}
+
+function getReward(nodeId, cb) {
+  dnode.connect(RPC_PORT, (rpc) => {
+    rpc.getReward(nodeId, (err, data) => {
+      if (cb) cb(err, data)
+    })
+  })
+}
+
 function openLogFolder() {
   shell.showItemInFolder(LOG_DIR)
 }
@@ -192,6 +208,8 @@ export {
   status,
   destory,
   startAll,
+  checkReward,
+  getReward,
   shareEventEmitter,
   openLogFolder,
   openConfig,
