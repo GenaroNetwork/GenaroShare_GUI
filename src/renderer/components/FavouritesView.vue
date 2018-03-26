@@ -18,10 +18,23 @@
   display: flex;
   width: 100%;
 }
+.layout-favourites-enum {
+  position: relative;
+}
 .icon {
   width: 15px;
   height: 15px;
   vertical-align: middle;
+}
+
+a {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  margin: auto;
+  float: left;
+  text-align: center;
 }
 </style>
 
@@ -46,6 +59,7 @@
                     </el-menu-item>
                 </el-submenu>
             </el-menu>
+            <a @click="openAgreement" href="javascript: void(0);">{{ $t("menu.help.using") }}</a>
         </div>
         <!-- 文件列表div -->
         <div class="layout-favourites-content">
@@ -61,6 +75,7 @@ import drive_unselect from './../assets/drive_unselect@2x.png';
 import drive_select from './../assets/drive_select@2x.png';
 import wallet_unselect from './../assets/wallet_unselect@2x.png';
 import wallet_select from './../assets/wallet_select@2x.png';
+import { shell } from "electron";
 
 export default {
     data() {
@@ -92,7 +107,10 @@ export default {
                     break;
             }
             this.$router.push({ path: '/' + e });
-        }
+        },
+        openAgreement() {
+            shell.openExternal("https://genaro.network/");
+        },
     }
 }
 </script>

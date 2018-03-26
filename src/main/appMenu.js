@@ -6,7 +6,7 @@
  * @returns {Object}  a menu object to be passed to electron.Menu
  */
 
-module.exports = function(app, shell) {
+module.exports = function (app, shell) {
 
   const template = [
     {
@@ -50,36 +50,36 @@ module.exports = function(app, shell) {
     {
       label: app.menuSetting.menu.view.view,
       submenu: [
-      //   {
-      //     label: 'Reload',
-      //     accelerator: 'CmdOrCtrl+R',
-      //     click: function(item, focusedWindow) {
-      //       if (focusedWindow)
-      //         focusedWindow.reload();
-      //     }
-      //   },
+        //   {
+        //     label: 'Reload',
+        //     accelerator: 'CmdOrCtrl+R',
+        //     click: function(item, focusedWindow) {
+        //       if (focusedWindow)
+        //         focusedWindow.reload();
+        //     }
+        //   },
         {
           label: app.menuSetting.menu.view.togglefullscreen,
-          accelerator: (function() {
+          accelerator: (function () {
             if (process.platform === 'darwin')
               return 'Ctrl+Command+F';
             else
               return 'F11';
           })(),
-          click: function(item, focusedWindow) {
+          click: function (item, focusedWindow) {
             if (focusedWindow)
               focusedWindow.setFullScreen(!focusedWindow.isFullScreen());
           }
         },
         {
           label: app.menuSetting.menu.view.toggledevelopertools,
-          accelerator: (function() {
+          accelerator: (function () {
             if (process.platform === 'darwin')
               return 'Alt+Command+I';
             else
               return 'Ctrl+Shift+I';
           })(),
-          click: function(item, focusedWindow) {
+          click: function (item, focusedWindow) {
             if (focusedWindow)
               focusedWindow.toggleDevTools();
           }
@@ -107,8 +107,16 @@ module.exports = function(app, shell) {
       role: 'help',
       submenu: [
         {
+          label: app.menuSetting.menu.help.agreement,
+          click: function () { shell.openExternal('https://genaro.network') }
+        },
+        {
+          label: app.menuSetting.menu.help.using,
+          click: function () { shell.openExternal('https://genaro.network') }
+        },
+        {
           label: app.menuSetting.menu.help.learnmore,
-          click: function() { shell.openExternal('http://genaro.network') }
+          click: function () { shell.openExternal('https://genaro.network') }
         },
       ]
     },
@@ -117,7 +125,7 @@ module.exports = function(app, shell) {
       submenu: [
         {
           label: '中文',
-          click: function(menuItem, browserWindow, event) { 
+          click: function (menuItem, browserWindow, event) {
             browserWindow.webContents.send('locale-language', 'zh')
             app.menuSetting.setLocale('zh')
             app.menuSetting.updateMenu()
@@ -125,7 +133,7 @@ module.exports = function(app, shell) {
         },
         {
           label: 'English',
-          click: function(menuItem, browserWindow, event) { 
+          click: function (menuItem, browserWindow, event) {
             browserWindow.webContents.send('locale-language', 'en')
             app.menuSetting.setLocale('en')
             app.menuSetting.updateMenu()
@@ -175,11 +183,11 @@ module.exports = function(app, shell) {
         {
           label: app.menuSetting.menu.darwin.quit,
           accelerator: 'Command+Q',
-          click: function() { app.quit(); }
+          click: function () { app.quit(); }
         },
       ]
     });
-    const windowMenu = template.find(function(m) { return m.role === 'window' })
+    const windowMenu = template.find(function (m) { return m.role === 'window' })
     if (windowMenu) {
       windowMenu.submenu.push(
         {

@@ -221,6 +221,8 @@ exports.default = {
     },
     help: {
       help: 'Help',
+      using: '操作说明',
+      agreement: '用户协议',
       learnmore: 'Learn More'
     },
     language: {
