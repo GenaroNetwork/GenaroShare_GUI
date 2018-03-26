@@ -484,8 +484,7 @@ export default {
                 if (value.toString().trim() === "") {
                     callback(new Error(this.$t('dashboard.mywallet.gaspricemsg')));
                 }
-                price = utils.fromWei(price.toString(), "Gwei");
-                if (parseInt(value) < 1e9) {
+                if (parseInt(value) < 1) {
                     callback(new Error(this.$t('dashboard.mywallet.gaspriceerrmsg', { price })));
                 } else {
                     callback();
