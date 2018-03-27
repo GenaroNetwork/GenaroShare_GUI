@@ -1,8 +1,9 @@
 import { app, BrowserWindow, Menu, shell, } from 'electron';
-import registerProtocals from './customProtocol' 
+import registerProtocals from './customProtocol'
 // import { startShare } from '../lib/share'
 const defaultMenu = require('./appMenu');
 import i18n, { writeLangJsonConfigFile } from '../renderer/i18n';
+import { GET_AGREEMENT, GET_TUTORIAL } from "../config";
 
 const { connect } = require('net')
 const { fork } = require('child_process')
@@ -34,6 +35,10 @@ function setMenu() {
 }
 
 function addMenu() {
+    app.externalLink = {
+        agreement: GET_AGREEMENT,
+        tutorial: GET_TUTORIAL,
+    };
     // Get template for default menu 
     const menu = defaultMenu(app, shell);
 
@@ -84,7 +89,7 @@ function initRPCServer(callback) {
     if (process.env.NODE_ENV === 'development') {
         RPCServer = fork(`${__dirname}/../../static/rpc-server.js`, { env: { STORJ_NETWORK: 'gtest' } })
     } else {
-        RPCServer = fork(`${__dirname}/static/rpc-server.js`,       { env: { STORJ_NETWORK: 'gtest' } })
+        RPCServer = fork(`${__dirname}/static/rpc-server.js`, { env: { STORJ_NETWORK: 'gtest' } })
     }
     process.on('exit', () => {
         RPCServer.kill()

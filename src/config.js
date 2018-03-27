@@ -1,4 +1,4 @@
-
+import i18n from './renderer/i18n';
 
 // prod
 const BRIDGE_API_URL = 'http://47.100.33.60:8080';
@@ -20,6 +20,31 @@ const HTTP_PROVIDER = "https://ropsten.infura.io/wYBhtj2SSUB7qlztqEjx";
 
 const GNXAddr = "0x9e22797c8f5E8148d010DD9Bbb8f47a0Def069A4";
 const EmuAddr = "0x4BAC64d1aA7a3167eB225FFB2B1c9C049e027Cfc";
+
+const GET_AGREEMENT = () => {
+    let l = i18n.locale;
+    switch (l) {
+        case "zh":
+        case "en":
+            break;
+        default:
+            l = "en"
+            break;
+    }
+    return `https://genaro.network/${l}/genaro-sharer/user-agreement`;
+};
+const GET_TUTORIAL = () => {
+    let l = i18n.locale;
+    switch (l) {
+        case "zh":
+        case "en":
+            break;
+        default:
+            l = "en"
+            break;
+    }
+    return `https://genaro.network/${l}/genaro-sharer/user-tutorial`;
+};
 
 const TASK_STATE = Object.freeze({
     INIT: 1,
@@ -48,4 +73,6 @@ export {
     HTTP_PROVIDER,
     GNXAddr,
     EmuAddr,
+    GET_AGREEMENT,
+    GET_TUTORIAL,
 }

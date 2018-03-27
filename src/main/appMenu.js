@@ -108,15 +108,19 @@ module.exports = function (app, shell) {
       submenu: [
         {
           label: app.menuSetting.menu.help.agreement,
-          click: function () { shell.openExternal('https://genaro.network') }
+          click: function (menuItem, browserWindow, event) {
+            shell.openExternal(app.externalLink.agreement());
+          }
         },
         {
-          label: app.menuSetting.menu.help.using,
-          click: function () { shell.openExternal('https://genaro.network') }
+          label: app.menuSetting.menu.help.tutorial,
+          click: function (menuItem, browserWindow, event) {
+            shell.openExternal(app.externalLink.tutorial());
+          }
         },
         {
           label: app.menuSetting.menu.help.learnmore,
-          click: function () { shell.openExternal('https://genaro.network') }
+          click: function () { shell.openExternal('http://genaro.network') }
         },
       ]
     },
