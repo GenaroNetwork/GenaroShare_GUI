@@ -59,7 +59,7 @@ a {
                     </el-menu-item>
                 </el-submenu>
             </el-menu>
-            <a @click="openAgreement" href="javascript: void(0);">{{ $t("menu.help.using") }}</a>
+            <a @click="openAgreement" href="javascript: void(0);">{{ $t("menu.help.tutorial") }}</a>
         </div>
         <!-- 文件列表div -->
         <div class="layout-favourites-content">
