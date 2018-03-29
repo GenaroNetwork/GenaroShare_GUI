@@ -7,7 +7,7 @@ var prodConfig = {
   ],
   'maxOfferConcurrency': 16,
   'bridges': [{
-    'url': 'http://101.132.159.197:8080',
+    'url': 'http://47.100.33.60:8080',
     'extendedKey': 'xpub6ABDixD5jpQUDWNzHFh2WgAuANKDeTHmeXqLYaXsUuzpvfN8ZvbfBMXXbYkoq1kCvvpbiNE9zAzeC9VQh8dMNDb8mjc8cUh8F4jaUmFkyjr'
   }],
   'seedList': [
@@ -16,7 +16,7 @@ var prodConfig = {
   'rpcAddress': '127.0.0.1',
   'rpcPort': 9001,
   'doNotTraverseNat': false,
-  'maxTunnels': 0,
+  'maxTunnels': 3,
   'maxConnections': 150,
   'tunnelGatewayRange': {
     'min': 4001,
@@ -31,7 +31,7 @@ var prodConfig = {
   'loggerOutputFile': '',
   'loggerVerbosity': 4,
   'storagePath': '',
-  'storageAllocation': '5GB',
+  'storageAllocation': '50GB',
   'enableTelemetryReporting': false
 }
 
@@ -44,16 +44,16 @@ var testConfig = {
   ],
   'maxOfferConcurrency': 16,
   'bridges': [{
-    'url': 'http://47.100.33.60:8080',
+    'url': 'http://101.132.159.197:8080',
     'extendedKey': 'xpub6ABDixD5jpQUDWNzHFh2WgAuANKDeTHmeXqLYaXsUuzpvfN8ZvbfBMXXbYkoq1kCvvpbiNE9zAzeC9VQh8dMNDb8mjc8cUh8F4jaUmFkyjr'
   }],
   'seedList': [
-    'storj://47.100.33.60:4000/337472da3068fa05d415262baf4df5bada8aefdc'
+    'storj://101.132.159.197:4000/337472da3068fa05d415262baf4df5bada8aefdc'
   ],
   'rpcAddress': '127.0.0.1',
   'rpcPort': 9002,
   'doNotTraverseNat': false,
-  'maxTunnels': 0,
+  'maxTunnels': 3,
   'maxConnections': 150,
   'tunnelGatewayRange': {
     'min': 4001,
@@ -68,7 +68,7 @@ var testConfig = {
   'loggerOutputFile': '',
   'loggerVerbosity': 4,
   'storagePath': '',
-  'storageAllocation': '5GB',
+  'storageAllocation': '50GB',
   'enableTelemetryReporting': false
 }
 
