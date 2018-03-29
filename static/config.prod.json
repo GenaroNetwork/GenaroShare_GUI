@@ -31,6 +31,6 @@
   "loggerOutputFile": "",
   "loggerVerbosity": 4,
   "storagePath": "",
-  "storageAllocation": "5GB",
+  "storageAllocation": "20GB",
   "enableTelemetryReporting": false
 }
