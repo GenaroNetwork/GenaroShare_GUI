@@ -180,7 +180,7 @@
   font-weight: bold;
   float: left;
   margin-left: 30px;
-  width: 85%;
+  width: calc(100% - 180px);
   margin-top: 25px;
 }
 .button1 {

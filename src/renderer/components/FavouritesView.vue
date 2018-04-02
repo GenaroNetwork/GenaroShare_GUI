@@ -13,6 +13,7 @@
   min-height: 520px;
   background: #fff;
   border-radius: 8px;
+  width: calc(100% - 220px);
 }
 .colcontainer {
   display: flex;
