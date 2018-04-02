@@ -3,7 +3,7 @@ import * as txManager from '../../../wallet/transactionManager'
 import { getBalanceEth, getBalanceGnx } from '../../../wallet/transactionManager';
 const Tx = require('ethereumjs-tx');
 
-import { web3, GNXAddr, EMUAddr as EmuAddr } from "../../../wallet/web3Util";
+import { web3, GNXAddr, EMUAddr as EmuAddr, chainId } from "../../../wallet/web3Util";
 
 const fs = require('fs');
 const state = {
@@ -133,6 +133,7 @@ const actions = {
         }
         // set the provider you want from Web3.providers
         let gasPrice = await web3.eth.getGasPrice();
+        gasPrice = gasPrice < 4e9 ? 4e9 : gasPrice;
         let wallet = await walletManager.loadRawWallet(address, password);
         let GNX = require("../../../wallet/GNX.json");
         let abi = GNX.abi;
@@ -156,8 +157,7 @@ const actions = {
             from: address,
             to: GNXAddr,
             data: Contract.methods.approveAndCall(EmuAddr, quantity * 10 ** 9, _newstr).encodeABI(),
-            chainId: 3 //ropsten
-            // chainId:0 //mainnet
+            chainId
         }
         // key should be the one from genaro stake stakebase
         var privateKey = wallet._privKey;
