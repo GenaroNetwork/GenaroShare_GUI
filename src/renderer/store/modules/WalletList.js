@@ -166,11 +166,7 @@ const actions = {
         var serializedTx = tx.serialize();
         console.log(serializedTx.toString('hex'));
 
-        web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'), (err, hash) => {
-            if (err) { console.log(err); return; }
-
-            console.log('stake tx hash: ' + hash);
-        });
+        return await web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'));
     },
     async walletListUpdateName({ commit }, { address, name }) {
         await walletManager.updateWalletName({ address, name });

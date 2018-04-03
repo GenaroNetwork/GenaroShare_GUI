@@ -66,6 +66,16 @@
             </span>
         </el-dialog>
 
+        <el-dialog title="Stake Transaction" :visible.sync="showStakeTransactionDialog" width="600px" :center="true">
+            <div>
+                <p>The transaction has been sent successfunlly.Transaction hash: {{ stakeTransaction }}</p>
+                <div class="txHash" @click="openStakeTranscationHash" :center="true">view in etherscan</div>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="showStakeTransactionDialog = false">Close</el-button>
+            </span>
+        </el-dialog>
+
         <div class="layout-header">
             <el-popover ref="popover" placement="bottom-end" trigger="click" v-model="addSharePop.visible">
                 <div>
@@ -275,6 +285,8 @@ export default {
             dialogMessage: "",
             dialogType: 1,
             rowData: null,
+            showStakeTransactionDialog : false,
+            stakeTransaction: ''
         }
     },
     computed: {
@@ -384,6 +396,9 @@ export default {
         },
         openRewardHash() {
             shell.openExternal(EtherscanURL + this.reward.hash);
+        },
+        openStakeTranscationHash() {
+            shell.openExternal(EtherscanURL + this.stakeTransaction);
         },
         selectFile() {
             var options = {
@@ -502,7 +517,9 @@ export default {
                 });
                 this.setRecipientDialogLoading = false;
                 this.setRecipientDialogVisible = false;
-                this.$message.success("success");
+                // this.$message.success("Success.The transactionHash is: " + hash.transactionHash);
+                this.showStakeTransactionDialog = true;
+                this.stakeTransaction = hash.transactionHash;
             } catch (e) {
                 this.setRecipientDialogLoading = false;
                 this.$message.error(e.message);
