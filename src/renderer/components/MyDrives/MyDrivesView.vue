@@ -135,7 +135,7 @@
                             <el-button type="text" @click="restartShare(scope.row)">{{ $t("dashboard.drive.restart") }}</el-button>
                             <br/>
                             <el-button type="text" v-if="scope.row.statusSwitch" @click="stopShare(scope.row)">{{ $t("dashboard.drive.stop") }}</el-button>
-                            <el-button type="text" v-else @click="stopShare(scope.row)">{{ $t("dashboard.drive.start") }}</el-button>
+                            <el-button type="text" v-else @click="startShare(scope.row)">{{ $t("dashboard.drive.start") }}</el-button>
                             <br/>
                             <el-button type="text" @click="deleteShare(scope.row)">{{ $t("common.delete") }}</el-button>
                             <br/>
@@ -298,9 +298,9 @@ export default {
                 data.peers = share.meta.farmerState.totalPeers;
                 data.contractCount = share.meta.farmerState.contractCount;
                 data.dataReceivedCount = share.meta.farmerState.dataReceivedCount;
-                data.allocs = data.contractCount + '(' + data.dataReceivedCount + 'received)';
-                data.bridges = share.meta.farmerState.bridgesConnectionStatus;
-                data.statusLight = share.meta.farmerState.portStatus.connectionStatus;
+                data.bridges = share.meta.farmerState.bridgesConnectionStatus || 0;
+                data.allocs = data.bridges === 0 ? 0 : data.contractCount + '(' + data.dataReceivedCount + 'received)'; 
+                data.statusLight = share.meta.farmerState.portStatus ? share.meta.farmerState.portStatus.connectionStatus : -1;
                 switch (data.bridges) {
                     case 0:
                         data.bridgesText = 'Disconnected';
@@ -419,6 +419,12 @@ export default {
             this.dialogType = 1;
             this.rowData = row;
         },
+        startShare(row) {
+            this.dialogVisible = true;
+            this.dialogMessage = "Do you confirm to start your sharing node?";
+            this.dialogType = 1;
+            this.rowData = row;
+        },
         stopShare(row) {
             this.dialogVisible = true;
             this.dialogMessage = "Do you confirm to stop your sharing node? You can restart anytime later, but users cannot get their data during the time you stop, thus you cannot get reward and it will lower your device reputation score.";
@@ -445,7 +451,7 @@ export default {
             switch (this.dialogType) {
                 case 1:
                     row.show = false;
-                    share.restart(row.id);
+                    share.restart(row.id, (err) => { this.$message.error(err.message);});
                     break;
                 case 2:
                     row.show = false;
