@@ -53,6 +53,8 @@ exports.default = {
     error: 'Error',
     confirm: 'confirm',
     cancel: 'cancel',
+    checkVersion: 'Check',
+    updateVersion: 'Update'
   },
   dashboard: {
     myfiles: {

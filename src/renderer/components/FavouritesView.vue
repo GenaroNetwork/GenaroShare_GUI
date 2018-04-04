@@ -30,12 +30,28 @@
 
 a {
   position: absolute;
+  bottom: 36px;
+  left: 0;
+  right: 0;
+  margin: auto;
+  float: left;
+  text-align: center;
+}
+
+.version {
+  font-size: 14px;
+  position: absolute;
   bottom: 10px;
   left: 0;
   right: 0;
   margin: auto;
   float: left;
   text-align: center;
+}
+.version > .update {
+  background-color: #409eff;
+  color: #fff;
+  padding: 2px;
 }
 </style>
 
@@ -60,7 +76,11 @@ a {
                     </el-menu-item>
                 </el-submenu>
             </el-menu>
-            <a @click="openAgreement" href="javascript: void(0);">{{ $t("menu.help.tutorial") }}</a>
+            <a @click="openAgreement" href="javascript: void(0);">{{ $t("menu.help.tutorial") }}</a>        
+            <div class="version">
+                <span>{{ currentVersion }}</span>
+                <el-button v-if="hasNewVersion" type="text" @click="openDownloadPage" class="update">{{ $t('common.updateVersion') }}</el-button>
+            </div>
         </div>
         <!-- 文件列表div -->
         <div class="layout-favourites-content">
@@ -77,22 +97,37 @@ import drive_select from './../assets/drive_select@2x.png';
 import wallet_unselect from './../assets/wallet_unselect@2x.png';
 import wallet_select from './../assets/wallet_select@2x.png';
 import { shell } from "electron";
+import { version } from "../../../package.json";
+import { CHECK_MAC_UPDATE_URL, CHECK_WIN_UPDATE_URL } from "../../config";
 
 export default {
     data() {
         return {
             activeName: 'my-drives',
             drive_icon: drive_select,
-            wallet_icon: wallet_unselect
+            wallet_icon: wallet_unselect,
+            isMac: true,
+            hasNewVersion: false,
+            currentVersion: ""
         }
     },
     created: function () {
         this.routerTo("my-drives");
+        if (require("os").platform() !== "darwin") {
+            this.isMac = false;
+        }
+        this.currentVersion = version;
     },
     computed: {
         activePath() {
             return this.$route.path.replace('/', '');
         }
+    },
+    mounted() {
+        this.checkVersion();
+        setInterval(() => {
+            this.checkVersion();
+        }, 60 * 60 * 1000);
     },
     methods: {
         routerTo(e) {
@@ -112,6 +147,74 @@ export default {
         openAgreement() {
             shell.openExternal("https://genaro.network/");
         },
+        async getLatestVersion(callback) {
+           try {
+                let response;
+                if (this.isMac) {
+                    response = await this.$http.get(CHECK_MAC_UPDATE_URL);
+                } else {
+                    response = await this.$http.get(CHECK_WIN_UPDATE_URL);
+                }
+                if (!response) {
+                    return callback(null);
+                }
+                return callback(null, response.data);
+            } catch (error) {
+                return callback(error.message);
+            }
+        },
+        compareVersion(currentVersion, latestVersion) {
+            let lv = latestVersion.split("."),
+            cv = currentVersion.split("."),
+            isLatest = true;
+            for (let index = 0, length = lv.length; index < length; index++) {
+                let lvn = parseInt(lv[index]),
+                cvn = parseInt(cv[index] || 0);
+                if (lvn > cvn) {
+                    isLatest = false;
+                    break;
+                }
+            }
+            return isLatest;
+        },
+        openDownloadPage() {
+            this.getLatestVersion((err, data) => {
+                if (err) {
+                    return this.$message.error(err.message);
+                }
+                if (!data || !data.version) {
+                    return;
+                }
+                if (this.compareVersion(this.currentVersion, data.version)) {
+                    this.$message.info(
+                        "The current version has already been the latest version"
+                    );
+                    this.hasNewVersion = false;
+                    return;
+                }
+                if (!data.url) {
+                    return this.$message.error("Error Url");
+                }
+                shell.openExternal(data.url);
+            });
+        },
+        checkVersion() {
+            this.getLatestVersion((err, data) => {
+                if (err) {
+                    return this.$message.error(err.message);
+                }
+                if (!data || !data.version) {
+                    return;
+                }
+                if (this.compareVersion(this.currentVersion, data.version)) {
+                    return;
+                }
+                this.hasNewVersion = true;
+                this.$message.info(
+                    "A new version has been found.Please update as soon as possible."
+                );
+            });
+        }
     }
 }
 </script>

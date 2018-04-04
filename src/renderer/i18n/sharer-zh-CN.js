@@ -53,6 +53,8 @@ exports.default = {
     error: '错误',
     confirm: '确定',
     cancel: '取消',
+    checkVersion: '检测版本',
+    updateVersion: '更新版本'
   },
   dashboard: {
     myfiles: {
