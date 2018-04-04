@@ -1,6 +1,7 @@
 
 import dnode from 'dnode'
 import * as configs from './config'
+import {RPC_PORT} from '../config'
 const fs = require('fs')
 const storj = require('storj-lib')
 const path = require('path')
@@ -11,7 +12,6 @@ const events = require('events');
 const shareEventEmitter = new events.EventEmitter();
 const { shell } = require('electron')
 
-const RPC_PORT = 45015
 const BASE_PATH = path.join(os.homedir(), '.config/genaroshare')
 try {
   mkdirPSync(BASE_PATH)

@@ -3,7 +3,7 @@ import registerProtocals from './customProtocol'
 // import { startShare } from '../lib/share'
 const defaultMenu = require('./appMenu');
 import i18n, { writeLangJsonConfigFile } from '../renderer/i18n';
-import { GET_AGREEMENT, GET_TUTORIAL } from "../config";
+import { GET_AGREEMENT, GET_TUTORIAL, RPC_PORT } from "../config";
 
 const { connect } = require('net')
 const { fork } = require('child_process')
@@ -70,7 +70,7 @@ function createWindow() {
  * Check if the daemon is online and starts it if not running
  */
 function maybeStartDaemon(callback) {
-    const sock = connect(45015)
+    const sock = connect(RPC_PORT)
 
     sock.on('connect', () => {
         sock.end()
@@ -87,9 +87,9 @@ function maybeStartDaemon(callback) {
 function initRPCServer(callback) {
     let RPCServer
     if (process.env.NODE_ENV === 'development') {
-        RPCServer = fork(`${__dirname}/../../static/rpc-server.js`, { env: { STORJ_NETWORK: 'gtest' } })
+        RPCServer = fork(`${__dirname}/../../static/rpc-server.js`, { env: { STORJ_NETWORK: 'gtest', RPC_PORT } })
     } else {
-        RPCServer = fork(`${__dirname}/static/rpc-server.js`, { env: { STORJ_NETWORK: 'genaro' } })
+        RPCServer = fork(`${__dirname}/static/rpc-server.js`, { env: { STORJ_NETWORK: 'genaro', RPC_PORT } })
     }
     process.on('exit', () => {
         RPCServer.kill()

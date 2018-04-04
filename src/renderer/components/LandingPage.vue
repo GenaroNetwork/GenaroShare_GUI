@@ -74,6 +74,7 @@
 import SystemInformation from './LandingPage/SystemInformation'
 import dnode from 'dnode'
 import { createConfig, hasConfig, removeConfig, startShare } from '../../lib/share'
+import { RPC_PORT } from '../../../src/config';
 const prettyms = require('pretty-ms')
 
 var data = {
@@ -147,8 +148,8 @@ export default {
       }
     },
     showStatus() {
-      dnode.connect(45015, rpc => {
-        console.log('web connected 45015')
+      dnode.connect(RPC_PORT, rpc => {
+        console.log('web connected ' + RPC_PORT)
         this.rpc = rpc
         function showData() {
           rpc.status((err, shares) => {

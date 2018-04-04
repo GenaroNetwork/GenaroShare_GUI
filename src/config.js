@@ -61,6 +61,8 @@ const TASK_TYPE = Object.freeze({
     UPLOAD: 3
 })
 
+const RPC_PORT = 45016;
+
 export {
     BRIDGE_API_URL,
     PASSWORD_RESET_REDIRECT,
@@ -75,4 +77,5 @@ export {
     EmuAddr,
     GET_AGREEMENT,
     GET_TUTORIAL,
+    RPC_PORT
 }
