@@ -25,8 +25,8 @@
             </div>
 
             <span slot="footer" class="dialog-footer">
-                <el-button @click="reward.showDialog = false">关闭</el-button>
-                <el-button type="primary" @click="getReward(reward.id)" v-if="reward.step===0">提取</el-button>
+                <el-button @click="reward.showDialog = false">{{ $t("common.close") }}</el-button>
+                <el-button type="primary" @click="getReward(reward.id)" v-if="reward.step===0">{{ $t("common.draw") }}</el-button>
             </span>
         </el-dialog>
 

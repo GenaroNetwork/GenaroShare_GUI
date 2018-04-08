@@ -54,7 +54,8 @@ exports.default = {
     confirm: 'confirm',
     cancel: 'cancel',
     checkVersion: 'Check',
-    updateVersion: 'Update'
+    updateVersion: 'Update',
+    draw: 'Draw'
   },
   dashboard: {
     myfiles: {
