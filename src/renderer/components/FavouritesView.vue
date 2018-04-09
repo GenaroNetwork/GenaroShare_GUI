@@ -145,7 +145,7 @@ export default {
             this.$router.push({ path: '/' + e });
         },
         openAgreement() {
-            shell.openExternal("https://genaro.network/");
+            shell.openExternal("https://image.genaro.network/download/genaroSharer.pdf");
         },
         async getLatestVersion(callback) {
            try {
