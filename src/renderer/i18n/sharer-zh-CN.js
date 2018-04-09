@@ -199,7 +199,10 @@ exports.default = {
       connected: '已连接',
       confirming: '正在确认',
       connecting: '正在连接',
-      disconnected: '断开连接'
+      disconnected: '断开连接',
+      showLog: '显示日志',
+      openConfig: '打开配置文件',
+      showReward: '我的收益'
     }
   },
   menu: {

@@ -199,7 +199,10 @@ exports.default = {
       connected: 'Connected',
       confirming: 'Confirming',
       connecting: 'Connecting',
-      disconnected: 'Disconnected'
+      disconnected: 'Disconnected',
+      showLog: 'Show Log',
+      openConfig: 'Open Config',
+      showReward: 'Show Reward'
     }
   },
   menu: {

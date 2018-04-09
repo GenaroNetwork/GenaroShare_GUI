@@ -149,11 +149,11 @@
                             <br/>
                             <el-button type="text" @click="deleteShare(scope.row)">{{ $t("common.delete") }}</el-button>
                             <br/>
-                            <el-button type="text" @click="showLog(scope.row)">Show Log</el-button>
+                            <el-button type="text" @click="showLog(scope.row)">{{ $t("dashboard.drive.showLog") }}</el-button>
                             <br/>
-                            <el-button type="text" @click="openConfig(scope.row)">Open Config</el-button>
+                            <el-button type="text" @click="openConfig(scope.row)">{{ $t("dashboard.drive.openConfig") }}</el-button>
                             <br/>
-                            <el-button type="text" @click="showReward(scope.row.id)">Show Reward</el-button>
+                            <el-button type="text" @click="showReward(scope.row.id)">{{ $t("dashboard.drive.showReward") }}</el-button>
                         </div>
                     </el-popover>
                     <el-button type="text" @click="morePop(scope.row)" v-popover:popover{{$index}}>
@@ -232,6 +232,7 @@
 <script>
 import * as share from "../../../lib/share";
 import { web3, EtherscanURL } from "../../../wallet/web3Util";
+import i18n from '../../i18n';
 import { shell } from "electron";
 const prettyms = require('pretty-ms')
 import dnode from "dnode";
@@ -315,19 +316,19 @@ export default {
                 data.statusLight = share.meta.farmerState.portStatus ? share.meta.farmerState.portStatus.connectionStatus : -1;
                 switch (data.bridges) {
                     case 0:
-                        data.bridgesText = 'Disconnected';
+                        data.bridgesText = i18n.messages[i18n.locale].dashboard.drive.disconnected;
                         data.bridgesColor = '#FD4B24';
                         break;
                     case 1:
-                        data.bridgesText = 'Connecting';
+                        data.bridgesText = i18n.messages[i18n.locale].dashboard.drive.connecting;
                         data.bridgesColor = '#FD4B24';
                         break;
                     case 2:
-                        data.bridgesText = 'Confirming';
+                        data.bridgesText = i18n.messages[i18n.locale].dashboard.drive.confirming;
                         data.bridgesColor = '#FD4B24';
                         break;
                     case 3:
-                        data.bridgesText = 'Connected';
+                        data.bridgesText = i18n.messages[i18n.locale].dashboard.drive.connected;
                         data.bridgesColor = '#31A63B';
                         break;
                 }
