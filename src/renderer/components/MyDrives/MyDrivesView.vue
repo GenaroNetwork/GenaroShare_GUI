@@ -110,17 +110,50 @@
             </span>
         </el-dialog>
         <el-table :data="driversData" :empty-text="no_data">
-            <el-table-column :label="$t('dashboard.drive.status')" width="70px">
+            <el-table-column :label="$t('dashboard.drive.node')" min-width="180px" :show-overflow-tooltip="true">
                 <template slot-scope="scope">
-                    <div class="status-light green" v-if="!scope.row.statusLight"></div>
-                    <div class="status-light red" v-else></div>
+                    <div>
+                        <span>{{scope.row.id}}</span>
+                        <br/>
+                        <span>{{scope.row.location}}</span>
+                    </div>
                 </template>
             </el-table-column>
-            <el-table-column :label="$t('dashboard.drive.driveid')" prop="id" :show-overflow-tooltip="true">
+            <el-table-column :label="$t('dashboard.drive.status')">
+                <template slot-scope="scope">
+                    <span :class="scope.row.statusColor">{{scope.row.status}}</span>
+                </template>
             </el-table-column>
-            <el-table-column :label="$t('dashboard.drive.location')" prop="location" :show-overflow-tooltip="true">
+            <el-table-column :label="$t('dashboard.drive.uptime')" prop="time">
             </el-table-column>
-            <el-table-column :label="$t('dashboard.drive.shared')">
+            <el-table-column :label="$t('dashboard.drive.restarts')" prop="restarts">
+            </el-table-column>
+            <el-table-column :label="$t('dashboard.drive.peers')" prop="peers">
+            </el-table-column>
+            <el-table-column :label="$t('dashboard.drive.allocs')" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                    <div>
+                        <span>{{scope.row.contractCount}}</span>
+                        <br/>
+                        <span>{{scope.row.dataReceivedCount + ' received'}}</span>
+                    </div>
+                </template>
+            </el-table-column>
+            <el-table-column :label="$t('dashboard.drive.delta')">
+                <template slot-scope="scope">
+                    <p :class="scope.row.deltaColor">{{scope.row.delta}}</p>
+                </template>
+            </el-table-column>
+            <el-table-column :label="$t('dashboard.drive.port')">
+                <template slot-scope="scope">
+                    <div :class="scope.row.portColor">
+                        <span>{{scope.row.listenPort}}</span>
+                        <br/>
+                        <span>{{scope.row.connectionType}}</span>
+                    </div>
+                </template>
+            </el-table-column>
+            <el-table-column :label="$t('dashboard.drive.shared')" :show-overflow-tooltip="true">
                 <template slot-scope="scope">
                     <div>
                         <el-progress :percentage="scope.row.percentUsed"></el-progress>
@@ -128,13 +161,10 @@
                     </div>
                 </template>
             </el-table-column>
-            <el-table-column :label="$t('dashboard.drive.uptime')" prop="time">
-            </el-table-column>
-            <el-table-column :label="$t('dashboard.drive.peers')" prop="peers">
-            </el-table-column>
-            <el-table-column :label="$t('dashboard.drive.allocs')" prop="allocs" :show-overflow-tooltip="true">
-            </el-table-column>
-            <el-table-column :label="$t('dashboard.drive.bridges')" prop="bridgesText">
+            <el-table-column :label="$t('dashboard.drive.bridges')" width="120px">
+                <template slot-scope="scope">
+                    <p :class="scope.row.bridgesColor">{{scope.row.bridgesText}}</p>
+                </template>
             </el-table-column>
             <el-table-column>
                 <template slot-scope="scope">
@@ -228,6 +258,22 @@
   text-overflow: ellipsis;
   cursor: pointer;
 }
+
+.text-gray {
+    color: grey;
+}
+.text-green {
+    color: green;
+}
+.text-red {
+    color: red;
+}
+.text-yellow {
+    color: yellow;
+}
+.text-orange {
+    color: orange;
+}
 </style>
 <script>
 import * as share from "../../../lib/share";
@@ -300,55 +346,97 @@ export default {
             let datas = [];
             let connectId = "";
             shares.forEach(share => {
-                let data = {};
+                let data = {},
+                    config = share.config,
+                    farmerState = share.meta.farmerState || {},
+                    portStatus = farmerState.portStatus || {},
+                    ntpStatus = farmerState.ntpStatus || {};
                 data.id = share.id;
-                data.location = share.config.storagePath;
-                data.shareBasePath = share.config.shareBasePath;
-                data.spaceUsed = share.meta.farmerState.spaceUsed == '...' ? "0KB" : share.meta.farmerState.spaceUsed;
-                data.storageAllocation = share.config.storageAllocation;
-                data.percentUsed = share.meta.farmerState.percentUsed == '...' ? 0 : share.meta.farmerState.percentUsed;
+                data.location = config.storagePath;
+                data.shareBasePath = config.shareBasePath;
+                data.spaceUsed = (!farmerState.spaceUsed || farmerState.spaceUsed == '...') ? "0KB" : farmerState.spaceUsed;
+                data.storageAllocation = config.storageAllocation;
+                data.percentUsed = farmerState.percentUsed == '...' ? 0 : farmerState.percentUsed;
                 data.time = prettyms(share.meta.uptimeMs);
-                data.peers = share.meta.farmerState.totalPeers;
-                data.contractCount = share.meta.farmerState.contractCount;
-                data.dataReceivedCount = share.meta.farmerState.dataReceivedCount;
-                data.bridges = share.meta.farmerState.bridgesConnectionStatus || 0;
+                data.restarts = share.meta.numRestarts || 0;
+                data.peers = farmerState.totalPeers;
+                data.contractCount = farmerState.contractCount || 0;
+                data.dataReceivedCount = farmerState.dataReceivedCount || 0;
+                data.bridges = farmerState.bridgesConnectionStatus || 0;
                 data.allocs = data.bridges === 0 ? 0 : data.contractCount + '(' + data.dataReceivedCount + 'received)'; 
-                data.statusLight = share.meta.farmerState.portStatus ? share.meta.farmerState.portStatus.connectionStatus : -1;
-                switch (data.bridges) {
+                
+                data.listenPort = portStatus.listenPort;
+                data.connectionType = portStatus.connectionType;
+                switch (portStatus.connectionStatus) {
                     case 0:
-                        data.bridgesText = i18n.messages[i18n.locale].dashboard.drive.disconnected;
-                        data.bridgesColor = '#FD4B24';
+                        data.portColor = 'text-green';
                         break;
                     case 1:
-                        data.bridgesText = i18n.messages[i18n.locale].dashboard.drive.connecting;
-                        data.bridgesColor = '#FD4B24';
+                        data.portColor = 'text-yellow';
                         break;
                     case 2:
-                        data.bridgesText = i18n.messages[i18n.locale].dashboard.drive.confirming;
-                        data.bridgesColor = '#FD4B24';
-                        break;
-                    case 3:
-                        data.bridgesText = i18n.messages[i18n.locale].dashboard.drive.connected;
-                        data.bridgesColor = '#31A63B';
+                        data.portColor = 'text-red';
                         break;
                 }
 
-                data.status = share.state;
-                switch (data.status) {
+                // data.statusLight = portStatus.connectionStatus !== undefined ? portStatus.connectionStatus : -1;
+                let localeDrive = i18n.messages[i18n.locale].dashboard.drive;
+                switch (data.bridges) {
+                    case 0:
+                        data.bridgesText = localeDrive.disconnected;
+                        data.bridgesColor = 'text-gray';
+                        break;
+                    case 1:
+                        data.bridgesText = localeDrive.connecting;
+                        data.bridgesColor = 'text-yellow';
+                        break;
+                    case 2:
+                        data.bridgesText = localeDrive.confirming;
+                        data.bridgesColor = 'text-orange';
+                        break;
+                    case 3:
+                        data.bridgesText = localeDrive.connected;
+                        data.bridgesColor = 'text-green';
+                        break;
+                }
+
+                data.state = share.state;
+                switch (data.state) {
                     case 0:
                         data.statusSwitch = false;
+                        data.status = 'stopped';
+                        data.statusColor = 'text-gray'; 
                         break;
                     case 1:
                         data.statusSwitch = true;
                         connectId = share.id;
+                        data.status = 'running';
+                        data.statusColor = 'text-green'; 
                         break;
                     case 2:
                         data.statusSwitch = false;
+                        data.status = 'errored';
+                        data.statusColor = 'text-red'; 
+                        break;
+                    default:
+                        data.status = 'unknown';
                         break;
                 }
-                data.delta = share.meta.farmerState.ntpStatus ? share.meta.farmerState.ntpStatus.delta : 9999;
+
+                data.delta = ntpStatus.delta || '...';
+                switch (ntpStatus.status) {
+                    case 0:
+                        data.deltaColor = 'text-green';
+                        break;
+                    case 1:
+                        data.deltaColor = 'text-yellow';
+                        break;
+                    case 2:
+                        data.deltaColor = 'text-red';
+                        break;
+                }
+
                 data.show = false;
-                // data.listenPort = share.meta.farmerState.portStatus.listenPort;
 
                 datas.push(data);
             })
@@ -467,7 +555,11 @@ export default {
             switch (this.dialogType) {
                 case 1:
                     row.show = false;
-                    share.restart(row.id, (err) => { this.$message.error(err.message);});
+                    share.restart(row.id, (err) => { 
+                        if(err) {
+                            this.$message.error(err.message);
+                        }
+                    });
                     break;
                 case 2:
                     row.show = false;
