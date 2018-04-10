@@ -152,7 +152,7 @@ exports.default = {
       exportwallet: 'Export wallet as JSON',
       setdefaultpayment: 'Set as Default Payment',
       placeholder1: 'Please Enter the Wallet Password',
-      create: 'create new walet',
+      create: 'create new wallet',
     },
     debits: {
       debits: 'Debits',
