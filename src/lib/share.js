@@ -106,12 +106,16 @@ function create(shareSize, shareUnit, shareBasePath) {
 }
 
 function start(nodeId, cb) {
-  dnode.connect(RPC_PORT, (rpc) => {
-    const configPath = _getConfigPathById(nodeId)
-    rpc.start(configPath, (err) => {
-      if (cb) cb(err)
-    })
-  })
+  let d = dnode.connect(RPC_PORT);
+  d.on('remote', (remote) => {
+    let configPath = _getConfigPathById(nodeId);
+    remote.start(configPath, (err) => {
+      if (cb) {
+        cb(err);
+      }
+      d.end();
+    });
+  });
 }
 
 function startAll(cb) {
@@ -135,52 +139,76 @@ function startAll(cb) {
 }
 
 function stop(nodeId, cb) {
-  dnode.connect(RPC_PORT, (rpc) => {
-    rpc.stop(nodeId, err => {
-      if (cb) cb(err)
-    })
-  })
+  let d = dnode.connect(RPC_PORT);
+  d.on('remote', (remote) => {
+    remote.stop(nodeId, (err) => {
+      if (cb) {
+        cb(err);
+      }
+      d.end();
+    });
+  });
 }
 
 function restart(nodeId, cb) {
-  dnode.connect(RPC_PORT, (rpc) => {
-    rpc.restart(nodeId, err => {
-      if (cb) cb(err)
-    })
-  })
+  let d = dnode.connect(RPC_PORT);
+  d.on('remote', (remote) => {
+    remote.restart(nodeId, (err) => {
+      if (cb) {
+        cb(err);
+      }
+      d.end();
+    });
+  });
 }
 
 function status(cb) {
-  dnode.connect(RPC_PORT, (rpc) => {
-    rpc.status((err, statuses) => {
-      if (cb) cb(err, statuses)
-    })
-  })
+  let d = dnode.connect(RPC_PORT);
+  d.on('remote', (remote) => {
+    remote.status((err, statuses) => {
+      if (cb) {
+        cb(err, statuses);
+      }
+      d.end();
+    });
+  });
 }
 
 function destory(nodeId, cb) {
-  dnode.connect(RPC_PORT, (rpc) => {
-    rpc.destroy(nodeId, err => {
-      _remove(nodeId)
-      if (cb) cb(err)
-    })
-  })
+  let d = dnode.connect(RPC_PORT);
+  d.on('remote', (remote) => {
+    remote.destory(nodeId, (err) => {
+      _remove(nodeId);
+      if (cb) {
+        cb(err);
+      }
+      d.end();
+    });
+  });
 }
 
 function checkReward(nodeId, cb) {
-  dnode.connect(RPC_PORT, (rpc) => {
-    rpc.checkReward(nodeId, (err, data) => {
-      if (cb) cb(err, data)
-    })
-  })
+  let d = dnode.connect(RPC_PORT);
+  d.on('remote', (remote) => {
+    remote.checkReward(nodeId, (err, data) => {
+      if (cb) {
+        cb(err, data);
+      }
+      d.end();
+    });
+  });
 }
 
 function getReward(nodeId, cb) {
-  dnode.connect(RPC_PORT, (rpc) => {
-    rpc.getReward(nodeId, (err, data) => {
-      if (cb) cb(err, data)
-    })
-  })
+  let d = dnode.connect(RPC_PORT);
+  d.on('remote', (remote) => {
+    remote.getReward(nodeId, (err, data) => {
+      if (cb) {
+        cb(err, data);
+      }
+      d.end();
+    });
+  });
 }
 
 function openLogFolder() {
