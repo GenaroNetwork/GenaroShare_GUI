@@ -54,7 +54,7 @@ function createWindow() {
     setMenu();
     app.menuSetting.updateMenu();
     mainWindow = new BrowserWindow({
-        height: 563,
+        height: 620,
         useContentSize: true,
         width: 1500
     })
