@@ -97,8 +97,10 @@ module.exports = function (app, shell) {
         },
         {
           label: app.menuSetting.menu.darwin.hide,
-          accelerator: 'Command+H',
-          role: 'hide'
+          accelerator: 'CmdOrCtrl+H',
+          click: function(menuItem, browserWindow, event) {
+            browserWindow.hide();
+          }
         },
         {
           label: app.menuSetting.menu.window.close,
