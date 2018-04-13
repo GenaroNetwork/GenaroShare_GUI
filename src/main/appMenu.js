@@ -96,6 +96,11 @@ module.exports = function (app, shell) {
           role: 'minimize'
         },
         {
+          label: app.menuSetting.menu.darwin.hide,
+          accelerator: 'Command+H',
+          role: 'hide'
+        },
+        {
           label: app.menuSetting.menu.window.close,
           accelerator: 'CmdOrCtrl+W',
           role: 'close'
@@ -166,11 +171,6 @@ module.exports = function (app, shell) {
         },
         {
           type: 'separator'
-        },
-        {
-          label: app.menuSetting.menu.darwin.hide + ' ' + name,
-          accelerator: 'Command+H',
-          role: 'hide'
         },
         {
           label: app.menuSetting.menu.darwin.hideothers,

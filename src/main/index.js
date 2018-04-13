@@ -1,9 +1,12 @@
-import { app, BrowserWindow, Menu, shell, } from 'electron';
+import { app, BrowserWindow, Menu, shell, Tray, nativeImage} from 'electron';
 import registerProtocals from './customProtocol'
 // import { startShare } from '../lib/share'
 const defaultMenu = require('./appMenu');
 import i18n, { writeLangJsonConfigFile } from '../renderer/i18n';
 import { GET_AGREEMENT, GET_TUTORIAL, RPC_PORT } from "../config";
+
+var fs = require('fs'),
+    path = require('path');
 
 const { connect } = require('net')
 const { fork } = require('child_process')
@@ -14,10 +17,10 @@ const { fork } = require('child_process')
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-static-assets.html
  */
 if (process.env.NODE_ENV !== 'development') {
-    global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
+    global.__static = path.join(__dirname, '/static').replace(/\\/g, '\\\\')
 }
 
-let mainWindow
+let mainWindow, tray;
 const winURL = process.env.NODE_ENV === 'development'
     ? `http://localhost:9080`
     : `file://${__dirname}/index.html`
@@ -46,6 +49,24 @@ function addMenu() {
     Menu.setApplicationMenu(Menu.buildFromTemplate(menu));
 }
 
+function setTray(win) {
+    let icoPath = require('../../build/icons/icon.ico');
+    if (process.platform === 'darwin') {
+        icoPath = require('../renderer/assets/img/logo.png');
+    }
+    icoPath = path.join(__static, '../dist/electron' , icoPath);
+    
+    if(fs.existsSync(icoPath)) {
+        tray = new Tray(nativeImage.createFromPath(icoPath).resize({width: 16}));
+
+        tray.on('click', () => {
+            win.isVisible() ? win.hide() : win.show();
+        });
+    
+        tray.setToolTip('GenaroSharer');
+    }
+}
+
 function createWindow() {
     /**
      * Initial window options
@@ -58,11 +79,16 @@ function createWindow() {
         useContentSize: true,
         width: 1500
     })
+    setTray(mainWindow);
 
     mainWindow.loadURL(winURL)
 
     mainWindow.on('closed', () => {
-        mainWindow = null
+        mainWindow = null;
+        if(tray && !tray.isDestroyed()) {
+            tray.destroy();
+            tray = null;
+        }
     })
 }
 
