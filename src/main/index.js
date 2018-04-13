@@ -54,7 +54,12 @@ function setTray(win) {
     if (process.platform === 'darwin') {
         icoPath = require('../renderer/assets/img/logo.png');
     }
-    icoPath = path.join(__static, '../dist/electron' , icoPath);
+
+    if (process.env.NODE_ENV === 'development') {
+        icoPath = path.join(__static, '../dist/electron' , icoPath);
+    } else {
+        icoPath = path.join(__static, '../' , icoPath);
+    }
     
     if(fs.existsSync(icoPath)) {
         tray = new Tray(nativeImage.createFromPath(icoPath).resize({width: 16}));
