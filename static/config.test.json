@@ -5,7 +5,6 @@
     "0f02020202",
     "0f03020202"
   ],
-  "maxOfferConcurrency": 16,
   "bridges": [{
     "url": "http://101.132.159.197:8080",
     "extendedKey": "xpub6ABDixD5jpQUDWNzHFh2WgAuANKDeTHmeXqLYaXsUuzpvfN8ZvbfBMXXbYkoq1kCvvpbiNE9zAzeC9VQh8dMNDb8mjc8cUh8F4jaUmFkyjr"
