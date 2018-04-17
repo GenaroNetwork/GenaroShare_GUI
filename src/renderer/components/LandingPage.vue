@@ -65,7 +65,7 @@
       <a v-on:click.prevent="start()" href="#">Start</a>
       <a v-on:click.prevent="stop()" href="#">Stop</a>
       <a v-on:click.prevent="restart()" href="#">Restart</a>
-      <a v-on:click.prevent="destory()" href="#">Destory</a>
+      <a v-on:click.prevent="destroy()" href="#">Destory</a>
     </div>
   </div>
 </template>
@@ -121,7 +121,7 @@ export default {
         }
       })
     },
-    destory() {
+    destroy() {
       this.rpc.destroy(this.shareId, (err) => {
         if (err) {
           console.log(err)

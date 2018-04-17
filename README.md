@@ -253,10 +253,10 @@ function killall(cb) {
 ```
 import dnode from 'dnode';
 
-function destory(nodeId, cb) {
+function destroy(nodeId, cb) {
   let d = dnode.connect('45016');
   d.on('remote', (remote) => {
-    remote.destory(nodeId, (err) => {
+    remote.destroy(nodeId, (err) => {
       if (cb) {
         cb(err);
       }

@@ -567,7 +567,7 @@ export default {
                     break;
                 case 3:
                     row.show = false;
-                    share.destory(row.id);
+                    share.destroy(row.id);
                     break;
             }
             this.dialogVisible = false;

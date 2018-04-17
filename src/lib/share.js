@@ -174,10 +174,10 @@ function status(cb) {
   });
 }
 
-function destory(nodeId, cb) {
+function destroy(nodeId, cb) {
   let d = dnode.connect(RPC_PORT);
   d.on('remote', (remote) => {
-    remote.destory(nodeId, (err) => {
+    remote.destroy(nodeId, (err) => {
       _remove(nodeId);
       if (cb) {
         cb(err);
@@ -234,7 +234,7 @@ export {
   stop,
   restart,
   status,
-  destory,
+  destroy,
   startAll,
   checkReward,
   getReward,
