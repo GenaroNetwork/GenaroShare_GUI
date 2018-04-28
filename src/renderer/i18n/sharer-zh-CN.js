@@ -228,7 +228,8 @@ exports.default = {
     window: {
       window: '窗口',
       minimize: '最小化',
-      close: '关闭'
+      close: '关闭',
+      quit: '退出'
     },
     help: {
       help: '帮助',
@@ -247,6 +248,11 @@ exports.default = {
       showall: '显示所有',
       quit: '退出',
       front: '前端显示'
+    },
+    tray: {
+      exit: '退出',
+      hide: '最小化',
+      exitOrHide: '请问您是想最小化隐藏到系统托盘，还是退出程序？'
     }
   },
   encryption: {

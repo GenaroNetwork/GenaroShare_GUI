@@ -107,6 +107,14 @@ module.exports = function (app, shell) {
           accelerator: 'CmdOrCtrl+W',
           role: 'close'
         },
+        {
+          label: app.menuSetting.menu.window.quit,
+          accelerator: 'CmdOrCtrl+Q',
+          click: function() {
+            app.exitFlg = true;
+            app.quit();
+          }
+        },
       ]
     },
     {

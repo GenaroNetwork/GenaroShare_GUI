@@ -1,8 +1,8 @@
-import { app, BrowserWindow, Menu, shell, Tray, nativeImage} from 'electron';
+import { app, BrowserWindow, Menu, shell, Tray, nativeImage, dialog} from 'electron';
 import registerProtocals from './customProtocol'
 // import { startShare } from '../lib/share'
 const defaultMenu = require('./appMenu');
-import i18n, { writeLangJsonConfigFile } from '../renderer/i18n';
+import i18n, { writeLangJsonConfigFile, localeMessages } from '../renderer/i18n';
 import { GET_AGREEMENT, GET_TUTORIAL, RPC_PORT } from "../config";
 
 var fs = require('fs'),
@@ -67,6 +67,13 @@ function setTray(win) {
         tray.on('click', () => {
             win.isVisible() ? win.hide() : win.show();
         });
+        
+        tray.on('right-click', () => {
+            const contextMenu = Menu.buildFromTemplate([
+                {label: localeMessages.messages[localeMessages.locale].menu.tray.exit, type: 'normal', click: () => {app.exitFlg = true; app.quit();}}
+            ]);
+            tray.popUpContextMenu(contextMenu);
+        });
     
         tray.setToolTip('GenaroSharer');
     }
@@ -79,6 +86,7 @@ function createWindow() {
     registerProtocals();
     setMenu();
     app.menuSetting.updateMenu();
+    app.exitFlg = false;
     mainWindow = new BrowserWindow({
         height: 620,
         useContentSize: true,
@@ -94,7 +102,22 @@ function createWindow() {
             tray.destroy();
             tray = null;
         }
-    })
+    });
+
+    mainWindow.on('close', (event) => {
+        if(!app.exitFlg) {
+            dialog.showMessageBox({
+                type: 'question',
+                buttons: [localeMessages.messages[localeMessages.locale].menu.tray.hide, localeMessages.messages[localeMessages.locale].menu.tray.exit],
+                message: localeMessages.messages[localeMessages.locale].menu.tray.exitOrHide
+            }, (response) => {
+                if(response === 0) {
+                    event.preventDefault();
+                    mainWindow.hide();
+                }
+            });
+        }
+    });
 }
 
 /**

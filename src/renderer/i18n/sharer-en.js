@@ -228,7 +228,8 @@ exports.default = {
     window: {
       window: 'Window',
       minimize: 'Minimize',
-      close: 'Close'
+      close: 'Close',
+      quit: 'Quit'
     },
     help: {
       help: 'Help',
@@ -247,6 +248,11 @@ exports.default = {
       showall: 'Show All',
       quit: 'Quit',
       front: 'Bring All to Front'
+    },
+    tray: {
+      exit: 'Exit',
+      hide: 'Hide',
+      exitOrHide: 'Do you want to hide to the system tray or exit the program?'
     }
   },
   encryption: {

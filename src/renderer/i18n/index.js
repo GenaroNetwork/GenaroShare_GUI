@@ -47,6 +47,7 @@ export function writeLangJsonConfigFile(lang) {
     let langJson = { language: lang };
     createConfigDir();
     fs.writeFileSync(langConfigFile, JSON.stringify(langJson), 'utf8');
+    localeMessages.locale = lang;
 }
 export { localeMessages };
 export default i18n;
