@@ -106,14 +106,18 @@ function createWindow() {
 
     mainWindow.on('close', (event) => {
         if(!app.exitFlg) {
+            event.preventDefault();
             dialog.showMessageBox({
                 type: 'question',
                 buttons: [localeMessages.messages[localeMessages.locale].menu.tray.hide, localeMessages.messages[localeMessages.locale].menu.tray.exit],
                 message: localeMessages.messages[localeMessages.locale].menu.tray.exitOrHide
             }, (response) => {
                 if(response === 0) {
-                    event.preventDefault();
                     mainWindow.hide();
+                }
+                else {
+                    app.exitFlg = true;
+                    app.quit();
                 }
             });
         }
