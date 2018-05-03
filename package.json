@@ -1,7 +1,7 @@
 {
     "name": "eden-share-gui",
-    "version": "1.0.4",
-    "author": "Simon",
+    "version": "1.0.5",
+    "author": "Genaro",
     "description": "Share hard drive to Genaro network",
     "license": "null",
     "main": "./dist/electron/main.js",
