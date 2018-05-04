@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-dialog title="Your reward" :visible.sync="reward.showDialog" width="800px" :center="true" @open="reward.step = 0">
+        <el-dialog v-loading="drawWaiting" element-loading-background="rgba(0, 0, 0, 0.8)" title="Your reward" :visible.sync="reward.showDialog" width="800px" :center="true" @open="reward.step = 0">
             <div v-if="reward.step===0">
                 <el-row>
                     <el-col :span="8">Your stake wallet: </el-col>
@@ -333,7 +333,8 @@ export default {
             dialogType: 1,
             rowData: null,
             showStakeTransactionDialog : false,
-            stakeTransaction: ''
+            stakeTransaction: '',
+            drawWaiting: false
         }
     },
     computed: {
@@ -466,11 +467,14 @@ export default {
             });
         },
         getReward(nodeid) {
+            this.drawWaiting = true;
             if (!this.reward.stakeWallet || this.reward.stakeWallet === '0x0000000000000000000000000000000000000000') {
                 this.$message.error('this node has not been staked');
+                this.drawWaiting = false;
                 return;
             }
             share.getReward(nodeid, (err, obj) => {
+                this.drawWaiting = false;
                 if (err) {
                     this.$message.error(err.message);
                     return;
