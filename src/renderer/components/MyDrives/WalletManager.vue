@@ -297,7 +297,7 @@
             <el-button type="primary" size="small" @click="generateWallet">
                 {{ $t('dashboard.walletmanage.create') }}
             </el-button>
-            <el-button type="primary" @click="importV3WalletDialog.shown=true" size="small">{{ $t('dashboard.walletmanage.import', {name: ' Json'}) }}
+            <el-button type="primary" @click="importV3WalletDialog.shown=true" size="small">{{ $t('dashboard.walletmanage.importwallet') }}
                 <i class="el-icon-upload el-icon--right"></i>
             </el-button>
         </div>
