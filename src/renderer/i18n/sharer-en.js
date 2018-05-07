@@ -154,6 +154,9 @@ exports.default = {
       setdefaultpayment: 'Set as Default Payment',
       placeholder1: 'Please Enter the Wallet Password',
       create: 'create new wallet',
+      emptyPrivateKey: 'Please input your Private Key.',
+      inputJson: 'By Json',
+      inputKey: 'By Private Key'
     },
     debits: {
       debits: 'Debits',

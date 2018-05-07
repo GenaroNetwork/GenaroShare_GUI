@@ -129,8 +129,10 @@ async function importFromMnemonic(mnemonic, password) {
     return await saveWallet(wallet, generateWalletName(), password);
 }
 
-function importFromPrivateKey() {
-    // TODO:
+async function importFromPrivateKey(key, password, name) {
+    name = name || generateWalletName();
+    const w = Wallet.fromPrivateKey(key);
+    await saveWallet(w, name, password);
 }
 
 async function deleteWallet(address) {
@@ -249,6 +251,7 @@ export default {
     loadRawWallet,
     importFromV3Json,
     importFromMnemonic,
+    importFromPrivateKey,
     initRawWallet,
     generateSignedTx,
     generateSignedGnxTx,
