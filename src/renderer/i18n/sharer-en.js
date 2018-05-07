@@ -236,7 +236,8 @@ exports.default = {
       startConfirmTip: 'Do you confirm to start your sharing node?',
       stopConfirmTip: 'Do you confirm to stop your sharing node? You can restart anytime later, but users cannot get their data during the time you stop, thus you cannot get reward and it will lower your device reputation score.',
       deleteConfirmTip: 'Do you confirm to delete your sharing node? You will lose all data stored on your drive and cannot get reward, also it will lower your device reputation score.',
-      stakeFirstTip: 'Please STAKE first'
+      stakeFirstTip: 'Please STAKE first',
+      nodeNoStakeTip: 'this node has not been staked'
     }
   },
   menu: {

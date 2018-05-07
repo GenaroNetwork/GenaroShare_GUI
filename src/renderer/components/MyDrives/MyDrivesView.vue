@@ -469,7 +469,7 @@ export default {
         getReward(nodeid) {
             this.drawWaiting = true;
             if (!this.reward.stakeWallet || this.reward.stakeWallet === '0x0000000000000000000000000000000000000000') {
-                this.$message.error({message: 'this node has not been staked', showClose: true, duration: 0});
+                this.$message.error({message: this.$t('dashboard.drive.nodeNoStakeTip'), showClose: true, duration: 0});
                 this.drawWaiting = false;
                 return;
             }
