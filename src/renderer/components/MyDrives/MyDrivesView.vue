@@ -456,7 +456,7 @@ export default {
         showReward(nodeid) {
             share.checkReward(nodeid, (err, obj) => {
                 if (err) {
-                    this.$message.error(err.message);
+                    this.$message.error({message: err.message, showClose: true, duration: 0});
                     return;
                 }
                 this.reward.id = nodeid;
@@ -469,18 +469,18 @@ export default {
         getReward(nodeid) {
             this.drawWaiting = true;
             if (!this.reward.stakeWallet || this.reward.stakeWallet === '0x0000000000000000000000000000000000000000') {
-                this.$message.error('this node has not been staked');
+                this.$message.error({message: 'this node has not been staked', showClose: true, duration: 0});
                 this.drawWaiting = false;
                 return;
             }
             share.getReward(nodeid, (err, obj) => {
                 this.drawWaiting = false;
                 if (err) {
-                    this.$message.error(err.message);
+                    this.$message.error({message: err.message, showClose: true, duration: 0});
                     return;
                 }
                 if (obj.error) {
-                    this.$message.error(obj.error);
+                    this.$message.error({message: obj.error, showClose: true, duration: 0});
                     return;
                 }
                 this.reward.hash = obj.txHash;
@@ -562,10 +562,10 @@ export default {
                     share.restart(row.id, (err) => { 
                         if(err) {
                             if(err.message === 'Please STAKE first.') {
-                                this.$message.error(this.$t('dashboard.drive.stakeFirstTip'));
+                                this.$message.error({message: this.$t('dashboard.drive.stakeFirstTip'), showClose: true, duration: 0});
                             }
                             else {
-                                this.$message.error(err.message);
+                                this.$message.error({message: err.message, showClose: true, duration: 0});
                             }
                         }
                     });
@@ -624,7 +624,7 @@ export default {
                 this.stakeTransaction = hash.transactionHash;
             } catch (e) {
                 this.setRecipientDialogLoading = false;
-                this.$message.error(e.message);
+                this.$message.error({message: e.message, showClose: true, duration: 0});
             }
         }
     }

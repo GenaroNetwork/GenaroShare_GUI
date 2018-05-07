@@ -180,7 +180,7 @@ export default {
         openDownloadPage() {
             this.getLatestVersion((err, data) => {
                 if (err) {
-                    return this.$message.error(err.message);
+                    return this.$message.error({message: err.message, showClose: true, duration: 0});
                 }
                 if (!data || !data.version) {
                     return;
@@ -193,15 +193,15 @@ export default {
                     return;
                 }
                 if (!data.url) {
-                    return this.$message.error("Error Url");
+                    return this.$message.error({message: "Error Url", showClose: true, duration: 0});
                 }
                 shell.openExternal(data.url);
             });
         },
         checkVersion() {
             this.getLatestVersion((err, data) => {
-                if (err) {
-                    return this.$message.error(err.message);
+                if (err && err.message) {
+                    return this.$message.error({message: err.message, showClose: true, duration: 0});
                 }
                 if (!data || !data.version) {
                     return;

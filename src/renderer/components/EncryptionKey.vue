@@ -243,7 +243,7 @@ export default {
                 this.newWallet.name = wallet.name;
                 this.showPage = "successPage";
             }).catch(e => {
-                this.$message.error(this.$t('encryption.generrmsg', { errmsg: e.message || e }))
+                this.$message.error({message: this.$t('encryption.generrmsg', { errmsg: e.message || e }), showClose: true, duration: 0});
             })
         },
         confirm() {
@@ -253,7 +253,7 @@ export default {
                 //this.generateWallet(this.encryptionKey, pwd)
             } else {
                 console.error('bad key')
-                this.$message.error(this.$t('encryption.invalidkey'))
+                this.$message.error({message: this.$t('encryption.invalidkey'), showClose: true, duration: 0});
             }
         },
         regenKey() {
@@ -283,7 +283,7 @@ export default {
                 this.showPage = "setPassword";
                 //this.generateWallet(this.encryptionKey, pwd)
             } else {
-                this.$message.error(this.$t('encryption.keymismatch'));
+                this.$message.error({message: this.$t('encryption.keymismatch'), showClose: true, duration: 0});
             }
         },
         randomKey() {
