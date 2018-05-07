@@ -1,27 +1,27 @@
 <template>
     <div>
-        <el-dialog v-loading="drawWaiting" element-loading-background="rgba(0, 0, 0, 0.8)" title="Your reward" :visible.sync="reward.showDialog" width="800px" :center="true" @open="reward.step = 0">
+        <el-dialog v-loading="drawWaiting" element-loading-background="rgba(0, 0, 0, 0.8)" :title="$t('dashboard.drive.yourReward')" :visible.sync="reward.showDialog" width="800px" :center="true" @open="reward.step = 0">
             <div v-if="reward.step===0">
                 <el-row>
-                    <el-col :span="8">Your stake wallet: </el-col>
+                    <el-col :span="8">{{ $t("dashboard.drive.yourStakeWallet") }}</el-col>
                     <el-col :span="8">{{ reward.stakeWallet }}</el-col>
                 </el-row>
                 <el-row>
-                    <el-col :span="8">You have earned: </el-col>
+                    <el-col :span="8">{{ $t("dashboard.drive.youHaveEarned") }}</el-col>
                     <el-col :span="8">{{ reward.earnedGnx }} GNX</el-col>
                 </el-row>
                 <el-row>
-                    <el-col :span="8">The transfer fee will be:</el-col>
+                    <el-col :span="8">{{ $t("dashboard.drive.transferFeeTip") }}</el-col>
                     <el-col :span="8">{{ reward.gasGnx }} GNX</el-col>
                 </el-row>
                 <el-row>
-                    <el-col :span="8">You will get :</el-col>
+                    <el-col :span="8">{{ $t("dashboard.drive.youWillGet") }}</el-col>
                     <el-col :span="8">{{ reward.earnedGnx - reward.gasGnx > 0 ? reward.earnedGnx - reward.gasGnx : 0 }} GNX</el-col>
                 </el-row>
             </div>
             <div v-else-if="reward.step===1">
-                <p>GNX transferring. Transaction hash: {{ reward.hash }}</p>
-                <div class="txHash" @click="openRewardHash">view in etherscan</div>
+                <p>{{ $t("dashboard.drive.afterTransferTip") + reward.hash }}</p>
+                <div class="txHash" @click="openRewardHash">{{ $t("dashboard.drive.viewInEtherscan") }}</div>
             </div>
 
             <span slot="footer" class="dialog-footer">
@@ -30,34 +30,34 @@
             </span>
         </el-dialog>
 
-        <el-dialog title="stake wallet" :visible.sync="setRecipientDialogVisible" width="600px" :center="true" v-loading="setRecipientDialogLoading">
+        <el-dialog :title="$t('dashboard.drive.stakeWallet')" :visible.sync="setRecipientDialogVisible" width="600px" :center="true" v-loading="setRecipientDialogLoading">
             <el-form v-model="setWallet" label-position="top" size="small">
-                <el-form-item label="Driver ID">
+                <el-form-item :label="$t('dashboard.drive.driverId')">
                     <el-input v-model="setWallet.nodeId" :disabled="true" type="string"></el-input>
                 </el-form-item>
-                <el-form-item label="quantity">
-                    <el-input v-model="setWallet.quantity" type="number" min="5000" placeholder="set the quantity for stake, and will get a respond of size of sharing"></el-input>
+                <el-form-item :label="$t('dashboard.drive.quantity')">
+                    <el-input v-model="setWallet.quantity" type="number" min="5000" :placeholder="$t('dashboard.drive.setQuantityTip')"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <slot name="label">option
-                        <span style="padding-left: .5rem; color: #aaa;">Set the option for months to be shared</span>
+                    <slot name="label">{{ $t('dashboard.drive.option') }}
+                        <span style="padding-left: .5rem; color: #aaa;">{{ $t('dashboard.drive.setStakeMonthTip') }}</span>
                         <br/>
                     </slot>
-                    <el-select v-model="setWallet.option" placeholder="choose duration">
+                    <el-select v-model="setWallet.option" :placeholder="$t('dashboard.drive.chooseDuration')">
                         <el-option v-for="(option, index) of setWallet.options" :key="`option-${index}`" :label="option.label" :value="option.value"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item>
-                    <slot name="label">wallet
-                        <span style="padding-left: .5rem; color: #aaa;">Choose a wallet to stake</span>
+                    <slot name="label">{{ $t('dashboard.drive.wallet') }}
+                        <span style="padding-left: .5rem; color: #aaa;">{{ $t('dashboard.drive.chooseStakeWallet') }}</span>
                         <br/>
                     </slot>
-                    <el-select v-model="setWallet.wallet" placeholder="choose a wallet">
+                    <el-select v-model="setWallet.wallet" :placeholder="$t('dashboard.drive.chooseDuration')">
                         <el-option v-for="(wallet, index) of setWallet.wallets" :key="`wallet-${index}`" :label="wallet.name" :value="wallet.address"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="wallet password">
-                    <el-input v-model="setWallet.password" type="password" placeholder="input your wallet password"></el-input>
+                <el-form-item :label="$t('dashboard.drive.walletPassword')">
+                    <el-input v-model="setWallet.password" type="password" :placeholder="$t('dashboard.drive.inputWalletPassword')"></el-input>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -66,13 +66,13 @@
             </span>
         </el-dialog>
 
-        <el-dialog title="Stake Transaction" :visible.sync="showStakeTransactionDialog" width="600px" :center="true">
+        <el-dialog :title="$t('dashboard.drive.stakeTransaction')" :visible.sync="showStakeTransactionDialog" width="600px" :center="true">
             <div>
-                <p>The transaction has been sent successfunlly.Transaction hash: {{ stakeTransaction }}</p>
-                <div class="txHash" @click="openStakeTranscationHash" :center="true">view in etherscan</div>
+                <p>{{ $t('dashboard.drive.stakeSuccessTip') + stakeTransaction }}</p>
+                <div class="txHash" @click="openStakeTranscationHash" :center="true">{{ $t("dashboard.drive.viewInEtherscan") }}</div>
             </div>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="showStakeTransactionDialog = false">Close</el-button>
+                <el-button @click="showStakeTransactionDialog = false">{{ $t("common.close") }}</el-button>
             </span>
         </el-dialog>
 
@@ -523,25 +523,25 @@ export default {
         },
         restartShare(row) {
             this.dialogVisible = true;
-            this.dialogMessage = "Do you confirm to restart your sharing node?";
+            this.dialogMessage = this.$t('dashboard.drive.restartConfirmTip');
             this.dialogType = 1;
             this.rowData = row;
         },
         startShare(row) {
             this.dialogVisible = true;
-            this.dialogMessage = "Do you confirm to start your sharing node?";
+            this.dialogMessage = this.$t('dashboard.drive.startConfirmTip');
             this.dialogType = 1;
             this.rowData = row;
         },
         stopShare(row) {
             this.dialogVisible = true;
-            this.dialogMessage = "Do you confirm to stop your sharing node? You can restart anytime later, but users cannot get their data during the time you stop, thus you cannot get reward and it will lower your device reputation score.";
+            this.dialogMessage = this.$t('dashboard.drive.stopConfirmTip');
             this.dialogType = 2;
             this.rowData = row;
         },
         deleteShare(row) {
             this.dialogVisible = true;
-            this.dialogMessage = "Do you confirm to delete your sharing node? You will lose all data stored on your drive and cannot get reward, also it will lower your device reputation score.";
+            this.dialogMessage = this.$t('dashboard.drive.deleteConfirmTip');
             this.dialogType = 3;
             this.rowData = row;
         },
@@ -561,7 +561,12 @@ export default {
                     row.show = false;
                     share.restart(row.id, (err) => { 
                         if(err) {
-                            this.$message.error(err.message);
+                            if(err.message === 'Please STAKE first.') {
+                                this.$message.error(this.$t('dashboard.drive.stakeFirstTip'));
+                            }
+                            else {
+                                this.$message.error(err.message);
+                            }
                         }
                     });
                     break;
