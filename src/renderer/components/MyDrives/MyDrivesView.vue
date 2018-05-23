@@ -576,7 +576,11 @@ export default {
                     break;
                 case 3:
                     row.show = false;
-                    share.destroy(row.id);
+                    share.destroy(row.id, (err) => {
+                        if(err) {
+                            this.$message.error({message: err.message, showClose: true, duration: 0});
+                        }
+                    });
                     break;
             }
             this.dialogVisible = false;
