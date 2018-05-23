@@ -35,9 +35,18 @@
                 <el-form-item :label="$t('dashboard.drive.driverId')">
                     <el-input v-model="setWallet.nodeId" :disabled="true" type="string"></el-input>
                 </el-form-item>
-                <el-form-item :label="$t('dashboard.drive.quantity')">
-                    <el-input v-model="setWallet.quantity" type="number" min="5000" :placeholder="$t('dashboard.drive.setQuantityTip')"></el-input>
-                </el-form-item>
+                <el-row :gutter="20">
+                    <el-col :span="12">                
+                        <el-form-item :label="$t('dashboard.drive.quantity')">
+                            <el-input v-model="setWallet.quantity" type="number" min="5000" :placeholder="$t('dashboard.drive.setQuantityTip')"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">                
+                        <el-form-item :label="$t('dashboard.drive.gasprice')">
+                            <el-input v-model="setWallet.gasPrice" type="number" min="4" :placeholder="$t('dashboard.drive.gaspriceholder')"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
                 <el-form-item>
                     <slot name="label">{{ $t('dashboard.drive.option') }}
                         <span style="padding-left: .5rem; color: #aaa;">{{ $t('dashboard.drive.setStakeMonthTip') }}</span>
@@ -302,6 +311,7 @@ export default {
             setWallet: {
                 nodeId: '',
                 quantity: 0,
+                gasPrice: 15,
                 wallet: '',
                 wallets: [],
                 password: '',
@@ -609,6 +619,7 @@ export default {
             this.setWallet.wallet = null;
             this.setWallet.password = null;
             this.setWallet.quantity = null;
+            this.setWallet.gasPrice = 15;
             this.setWallet.option = null;
         },
         async setRecipient() {
@@ -620,6 +631,7 @@ export default {
                     option: this.setWallet.option,
                     nodeId: this.setWallet.nodeId,
                     quantity: this.setWallet.quantity,
+                    gasPrice: this.setWallet.gasPrice
                 });
                 this.setRecipientDialogLoading = false;
                 this.setRecipientDialogVisible = false;

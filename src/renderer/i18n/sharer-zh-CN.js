@@ -237,7 +237,9 @@ exports.default = {
       stopConfirmTip: '您确定要暂停您的分享节点吗? 您可以之后任何时候重启, 但用户在您暂停期间无法获取到存储的问题, 因此这期间您无法继续获取到收益并且也会降低您的节点信誉值.',
       deleteConfirmTip: '您确定要删除您的分享节点吗? 您将丢失所有存储在您设备上的数据并无法获取收益, 同时也会降低您的设备的信誉值.',
       stakeFirstTip: '请先押注',
-      nodeNoStakeTip: '节点尚未押注'
+      nodeNoStakeTip: '节点尚未押注',
+      gasprice: ' 燃料价格 (Gwei)',
+      gaspriceholder: '输入Gas'
     }
   },
   menu: {

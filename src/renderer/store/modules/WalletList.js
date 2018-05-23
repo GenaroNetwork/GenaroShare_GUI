@@ -98,7 +98,7 @@ const actions = {
         await walletManager.changePassword(address, password, newPassword)
         await dispatch('walletListInit')
     },
-    async walletListSetPayment({ commit, dispatch, rootState }, { address, password, option, nodeId, quantity }) {
+    async walletListSetPayment({ commit, dispatch, rootState }, { address, password, option, nodeId, quantity, gasPrice }) {
         function hex8(val) {
             val &= 0xFF;
             var hex = val.toString(16).toUpperCase();
@@ -136,8 +136,9 @@ const actions = {
             return utf8;
         }
         // set the provider you want from Web3.providers
-        let gasPrice = await web3.eth.getGasPrice();
-        gasPrice = gasPrice < 4e9 ? 4e9 : gasPrice;
+        // let gasPrice = await web3.eth.getGasPrice();
+        // gasPrice = gasPrice < 4e9 ? 4e9 : gasPrice;
+        gasPrice *= 1e9;
         let wallet = await walletManager.loadRawWallet(address, password);
         let GNX = require("../../../wallet/GNX.json");
         let abi = GNX.abi;
@@ -152,7 +153,7 @@ const actions = {
         let _buffer = toUTF8Array(_str);
         let _newstr = web3.utils.bytesToHex(_buffer);
         let nonceval = await web3.eth.getTransactionCount(address);
-
+        
         let txOptions = {
             gasPrice: web3.utils.toHex(parseInt(gasPrice)),
             gasLimit: web3.utils.toHex(470000),
