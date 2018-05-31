@@ -235,7 +235,7 @@ exports.default = {
       restartConfirmTip: 'Do you confirm to restart your sharing node?',
       startConfirmTip: 'Do you confirm to start your sharing node?',
       stopConfirmTip: 'Do you confirm to stop your sharing node? You can restart anytime later, but users cannot get their data during the time you stop, thus you cannot get reward and it will lower your device reputation score.',
-      deleteConfirmTip: 'Do you confirm to delete your sharing node? You will lose all data stored on your drive and cannot get reward, also it will lower your device reputation score.',
+      deleteConfirmTip: 'Do you confirm to delete your sharing node? If the node has been staked, the staked GNX cannot be used during the period. Please confirm that you have backed up the node configuration to retrieve it. You will lose all data stored on your drive and cannot get reward, also it will lower your device reputation score.',
       stakeFirstTip: 'Please STAKE first',
       nodeNoStakeTip: 'this node has not been staked',
       gasprice: 'Gas Price (Gwei)',
