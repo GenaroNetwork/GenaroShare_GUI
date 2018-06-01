@@ -71,7 +71,7 @@
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="setRecipientDialogVisible = false">{{ this.$t("common.cancel") }}</el-button>
-                <el-button type="primary" @click="setRecipient()">{{ this.$t("common.confirm") }}</el-button>
+                <el-button type="primary" @click="stakeShare()">{{ this.$t("common.confirm") }}</el-button>
             </span>
         </el-dialog>
 
@@ -112,7 +112,7 @@
         </div>
 
         <el-dialog :title="$t('dashboard.drive.notice')" :visible.sync="dialogVisible" width="30%">
-            <span>{{dialogMessage}}</span>
+            <div v-html="dialogMessage"></div>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="dialogVisible = false">{{ this.$t("common.cancel") }}</el-button>
                 <el-button type="primary" @click="handleDialog">{{ this.$t("common.confirm") }}</el-button>
@@ -555,6 +555,11 @@ export default {
             this.dialogType = 3;
             this.rowData = row;
         },
+        stakeShare() {
+            this.dialogVisible = true;
+            this.dialogMessage = this.$t('dashboard.drive.stakeConfirmTip');
+            this.dialogType = 4;
+        },
         showLog(row) {
             share.openLogFolder()
         },
@@ -563,7 +568,7 @@ export default {
         },
         handleDialog() {
             var row = this.rowData;
-            if (row == null) {
+            if (row == null && this.dialogType !== 4) {
                 return;
             }
             switch (this.dialogType) {
@@ -591,6 +596,9 @@ export default {
                             this.$message.error({message: err.message, showClose: true, duration: 0});
                         }
                     });
+                    break;
+                case 4:
+                    this.setRecipient();
                     break;
             }
             this.dialogVisible = false;

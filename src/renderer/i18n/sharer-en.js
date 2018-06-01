@@ -239,7 +239,8 @@ exports.default = {
       stakeFirstTip: 'Please STAKE first',
       nodeNoStakeTip: 'this node has not been staked',
       gasprice: 'Gas Price (Gwei)',
-      gaspriceholder: 'Gas'
+      gaspriceholder: 'Gas',
+      stakeConfirmTip: 'Please confirm that STAKE is irreversible. <br/>1.Your GNX will be locked during the period. <br/>2.Please do not delete the node after staking successfully or it will lower your device reputation score.<br/>3.You can save the node configuration by "opening the configuration file" to retrieve the node when it is deleted.'
     }
   },
   menu: {

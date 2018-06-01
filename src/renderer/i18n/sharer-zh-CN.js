@@ -239,7 +239,8 @@ exports.default = {
       stakeFirstTip: '请先押注',
       nodeNoStakeTip: '节点尚未押注',
       gasprice: ' 燃料价格 (Gwei)',
-      gaspriceholder: '输入Gas'
+      gaspriceholder: '输入Gas',
+      stakeConfirmTip: '请确认,押注操作不可逆. <br/>1.在抵押期间,您的GNX将被锁定,抵押期结束后可恢复使用. <br/>2.押注成功后,请勿随意删除节点,影响节点信誉值. <br/>3.可通过"打开配置文件"保存节点配置,以便误删时找回节点.'
     }
   },
   menu: {
