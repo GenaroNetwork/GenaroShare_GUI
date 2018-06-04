@@ -156,7 +156,8 @@ exports.default = {
       create: '新建钱包',
       emptyPrivateKey: '请输入密钥',
       inputJson: '通过文件导入',
-      inputKey: '通过密钥导入'
+      inputKey: '通过密钥导入',
+      coverExistedWalletTip: '钱包地址已存在. 是否覆盖?'
     },
     debits: {
       debits: '账单',

@@ -156,7 +156,8 @@ exports.default = {
       create: 'create new wallet',
       emptyPrivateKey: 'Please input your Private Key.',
       inputJson: 'By Json',
-      inputKey: 'By Private Key'
+      inputKey: 'By Private Key',
+      coverExistedWalletTip: 'Wallet address has already existed. Do you want to cover it?'
     },
     debits: {
       debits: 'Debits',

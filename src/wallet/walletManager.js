@@ -99,7 +99,16 @@ async function saveWallet(wa, name, pass) {
     let v3 = wa.toV3(pass);
     const address = v3.address;
     const found = db.get('wallet').find({ address: address }).value();
-    if (found) throw ({ code: 1, message: `address ${address} already exists. Please delete it first.` });
+    if (found) throw ({ code: 1, message: `address ${address} already exists. Please delete it first.`, continueFunc: coverExistedWallet.bind(null, v3, name) });
+    v3.name = name;
+    v3.created = Date.now();
+    db.get('wallet').push(v3).write();
+    return v3;
+}
+
+function coverExistedWallet(v3, name) {
+    const address = v3.address;
+    db.get('wallet').remove({ address }).write();
     v3.name = name;
     v3.created = Date.now();
     db.get('wallet').push(v3).write();
