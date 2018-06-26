@@ -63,18 +63,6 @@ a {
                     <i class="material-icons">storage</i>
                     <span>{{ $t("dashboard.drive.mydrives") }}</span>
                 </el-menu-item>
-                <el-submenu index="1" default-active="1-0">
-                    <template slot="title">
-                        <i class="material-icons">account_balance_wallet</i>
-                        <span slot="title">{{ $t("dashboard.mywallet.mywallet") }}</span>
-                    </template>
-                    <el-menu-item index="1-0" route="/wallet">
-                        <span slot="title">{{ $t("dashboard.mywallet.mywallet") }}</span>
-                    </el-menu-item>
-                    <el-menu-item index="1-1" route="/wallet-manager">
-                        <span slot="title">{{ $t("dashboard.walletmanage.walletmanage") }}</span>
-                    </el-menu-item>
-                </el-submenu>
             </el-menu>
             <a @click="openAgreement" href="javascript: void(0);">{{ $t("menu.help.tutorial") }}</a>        
             <div class="version">

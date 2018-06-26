@@ -1,90 +1,5 @@
 <template>
     <div>
-        <el-dialog v-loading="drawWaiting" element-loading-background="rgba(0, 0, 0, 0.8)" :title="$t('dashboard.drive.yourReward')" :visible.sync="reward.showDialog" width="800px" :center="true" @open="reward.step = 0">
-            <div v-if="reward.step===0">
-                <el-row>
-                    <el-col :span="8">{{ $t("dashboard.drive.yourStakeWallet") }}</el-col>
-                    <el-col :span="8">{{ reward.stakeWallet }}</el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="8">{{ $t("dashboard.drive.youHaveEarned") }}</el-col>
-                    <el-col :span="8">{{ reward.earnedGnx }} GNX</el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="8">{{ $t("dashboard.drive.transferFeeTip") }}</el-col>
-                    <el-col :span="8">{{ reward.gasGnx }} GNX</el-col>
-                </el-row>
-                <el-row>
-                    <el-col :span="8">{{ $t("dashboard.drive.youWillGet") }}</el-col>
-                    <el-col :span="8">{{ reward.earnedGnx - reward.gasGnx > 0 ? reward.earnedGnx - reward.gasGnx : 0 }} GNX</el-col>
-                </el-row>
-            </div>
-            <div v-else-if="reward.step===1">
-                <p>{{ $t("dashboard.drive.afterTransferTip") + reward.hash }}</p>
-                <div class="txHash" @click="openRewardHash">{{ $t("dashboard.drive.viewInEtherscan") }}</div>
-            </div>
-
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="reward.showDialog = false">{{ $t("common.close") }}</el-button>
-                <el-button type="primary" @click="getReward(reward.id)" v-if="reward.step===0">{{ $t("common.draw") }}</el-button>
-            </span>
-        </el-dialog>
-
-        <el-dialog :title="$t('dashboard.drive.stakeWallet')" :visible.sync="setRecipientDialogVisible" width="600px" :center="true" v-loading="setRecipientDialogLoading">
-            <el-form v-model="setWallet" label-position="top" size="small">
-                <el-form-item :label="$t('dashboard.drive.driverId')">
-                    <el-input v-model="setWallet.nodeId" :disabled="true" type="string"></el-input>
-                </el-form-item>
-                <el-row :gutter="20">
-                    <el-col :span="12">                
-                        <el-form-item :label="$t('dashboard.drive.quantity')">
-                            <el-input v-model="setWallet.quantity" type="number" min="5000" :placeholder="$t('dashboard.drive.setQuantityTip')"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="12">                
-                        <el-form-item :label="$t('dashboard.drive.gasprice')">
-                            <el-input v-model="setWallet.gasPrice" type="number" min="4" :placeholder="$t('dashboard.drive.gaspriceholder')"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
-                <el-form-item>
-                    <slot name="label">{{ $t('dashboard.drive.option') }}
-                        <span style="padding-left: .5rem; color: #aaa;">{{ $t('dashboard.drive.setStakeMonthTip') }}</span>
-                        <br/>
-                    </slot>
-                    <el-select v-model="setWallet.option" :placeholder="$t('dashboard.drive.chooseDuration')">
-                        <el-option v-for="(option, index) of setWallet.options" :key="`option-${index}`" :label="option.label" :value="option.value"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item>
-                    <slot name="label">{{ $t('dashboard.drive.wallet') }}
-                        <span style="padding-left: .5rem; color: #aaa;">{{ $t('dashboard.drive.chooseStakeWallet') }}</span>
-                        <br/>
-                    </slot>
-                    <el-select v-model="setWallet.wallet" :placeholder="$t('dashboard.drive.chooseDuration')">
-                        <el-option v-for="(wallet, index) of setWallet.wallets" :key="`wallet-${index}`" :label="wallet.name" :value="wallet.address"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item :label="$t('dashboard.drive.walletPassword')">
-                    <el-input v-model="setWallet.password" type="password" :placeholder="$t('dashboard.drive.inputWalletPassword')"></el-input>
-                </el-form-item>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="setRecipientDialogVisible = false">{{ this.$t("common.cancel") }}</el-button>
-                <el-button type="primary" @click="stakeShare()">{{ this.$t("common.confirm") }}</el-button>
-            </span>
-        </el-dialog>
-
-        <el-dialog :title="$t('dashboard.drive.stakeTransaction')" :visible.sync="showStakeTransactionDialog" width="600px" :center="true">
-            <div>
-                <p>{{ $t('dashboard.drive.stakeSuccessTip') + stakeTransaction }}</p>
-                <div class="txHash" @click="openStakeTranscationHash" :center="true">{{ $t("dashboard.drive.viewInEtherscan") }}</div>
-            </div>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="showStakeTransactionDialog = false">{{ $t("common.close") }}</el-button>
-            </span>
-        </el-dialog>
-
         <div class="layout-header">
             <el-popover ref="popover" placement="bottom-end" trigger="click" v-model="addSharePop.visible">
                 <div>
@@ -179,8 +94,6 @@
                 <template slot-scope="scope">
                     <el-popover ref="popover{{$index}}" placement="bottom-end" v-model="scope.row.show">
                         <div style="width:150px;text-align:center;">
-                            <el-button type="text" @click="setRecipientDialog(scope.row)">{{ $t("dashboard.drive.setrecipient") }}</el-button>
-                            <br/>
                             <el-button type="text" @click="restartShare(scope.row)">{{ $t("dashboard.drive.restart") }}</el-button>
                             <br/>
                             <el-button type="text" v-if="scope.row.statusSwitch" @click="stopShare(scope.row)">{{ $t("dashboard.drive.stop") }}</el-button>
@@ -191,8 +104,6 @@
                             <el-button type="text" @click="showLog(scope.row)">{{ $t("dashboard.drive.showLog") }}</el-button>
                             <br/>
                             <el-button type="text" @click="openConfig(scope.row)">{{ $t("dashboard.drive.openConfig") }}</el-button>
-                            <br/>
-                            <el-button type="text" @click="showReward(scope.row.id)">{{ $t("dashboard.drive.showReward") }}</el-button>
                         </div>
                     </el-popover>
                     <el-button type="text" @click="morePop(scope.row)" v-popover:popover{{$index}}>
@@ -297,39 +208,6 @@ const { dialog } = require('electron').remote;
 export default {
     data() {
         return {
-            reward: {
-                id: null,
-                stakeWallet: null,
-                showDialog: false,
-                step: 0,
-                earnedGnx: 0,
-                gasGnx: 0,
-                hash: null,
-            },
-            setRecipientDialogVisible: false,
-            setRecipientDialogLoading: false,
-            setWallet: {
-                nodeId: '',
-                quantity: 0,
-                gasPrice: 15,
-                wallet: '',
-                wallets: [],
-                password: '',
-                option: null,
-                options: [{
-                    label: "A month",
-                    value: 0,
-                }, {
-                    label: "3 months",
-                    value: 2,
-                }, {
-                    label: "6 months",
-                    value: 5,
-                }, {
-                    label: "A year",
-                    value: 12,
-                }]
-            },
             driversData: [],
             addSharePop: {
                 visible: false,
@@ -343,8 +221,7 @@ export default {
             dialogType: 1,
             rowData: null,
             showStakeTransactionDialog : false,
-            stakeTransaction: '',
-            drawWaiting: false
+            stakeTransaction: ''
         }
     },
     computed: {
@@ -463,46 +340,6 @@ export default {
         
     },
     methods: {
-        showReward(nodeid) {
-            share.checkReward(nodeid, (err, obj) => {
-                if (err) {
-                    this.$message.error({message: err.message, showClose: true, duration: 0});
-                    return;
-                }
-                this.reward.id = nodeid;
-                this.reward.earnedGnx = obj.earnedGnx;
-                this.reward.stakeWallet = obj.wallet;
-                this.reward.gasGnx = obj.gasGnx;
-                this.reward.showDialog = true;
-            });
-        },
-        getReward(nodeid) {
-            this.drawWaiting = true;
-            if (!this.reward.stakeWallet || this.reward.stakeWallet === '0x0000000000000000000000000000000000000000') {
-                this.$message.error({message: this.$t('dashboard.drive.nodeNoStakeTip'), showClose: true, duration: 0});
-                this.drawWaiting = false;
-                return;
-            }
-            share.getReward(nodeid, (err, obj) => {
-                this.drawWaiting = false;
-                if (err) {
-                    this.$message.error({message: err.message, showClose: true, duration: 0});
-                    return;
-                }
-                if (obj.error) {
-                    this.$message.error({message: obj.error, showClose: true, duration: 0});
-                    return;
-                }
-                this.reward.hash = obj.txHash;
-                this.reward.step = 1;
-            });
-        },
-        openRewardHash() {
-            shell.openExternal(EtherscanURL + this.reward.hash);
-        },
-        openStakeTranscationHash() {
-            shell.openExternal(EtherscanURL + this.stakeTransaction);
-        },
         selectFile() {
             var options = {
                 title: this.$t('dashboard.drive.choosesharing'),
@@ -555,11 +392,6 @@ export default {
             this.dialogType = 3;
             this.rowData = row;
         },
-        stakeShare() {
-            this.dialogVisible = true;
-            this.dialogMessage = this.$t('dashboard.drive.stakeConfirmTip');
-            this.dialogType = 4;
-        },
         showLog(row) {
             share.openLogFolder()
         },
@@ -576,12 +408,7 @@ export default {
                     row.show = false;
                     share.restart(row.id, (err) => { 
                         if(err) {
-                            if(err.message === 'Please STAKE first.') {
-                                this.$message.error({message: this.$t('dashboard.drive.stakeFirstTip'), showClose: true, duration: 0});
-                            }
-                            else {
-                                this.$message.error({message: err.message, showClose: true, duration: 0});
-                            }
+                            this.$message.error({message: err.message, showClose: true, duration: 0});
                         }
                     });
                     break;
@@ -596,9 +423,6 @@ export default {
                             this.$message.error({message: err.message, showClose: true, duration: 0});
                         }
                     });
-                    break;
-                case 4:
-                    this.setRecipient();
                     break;
             }
             this.dialogVisible = false;
@@ -617,38 +441,6 @@ export default {
                 this.restartShare(row);
             } else {
                 this.stopShare(row);
-            }
-        },
-        setRecipientDialog(row) {
-            this.setRecipientDialogVisible = true;
-            this.setRecipientDialogLoading = false;
-            this.setWallet.wallets = this.$store.state.WalletList.wallets;
-            this.setWallet.nodeId = row.id;
-            this.setWallet.wallet = null;
-            this.setWallet.password = null;
-            this.setWallet.quantity = null;
-            this.setWallet.gasPrice = 15;
-            this.setWallet.option = null;
-        },
-        async setRecipient() {
-            try {
-                this.setRecipientDialogLoading = true;
-                let hash = await this.$store.dispatch("walletListSetPayment", {
-                    address: this.setWallet.wallet,
-                    password: this.setWallet.password,
-                    option: this.setWallet.option,
-                    nodeId: this.setWallet.nodeId,
-                    quantity: this.setWallet.quantity,
-                    gasPrice: this.setWallet.gasPrice
-                });
-                this.setRecipientDialogLoading = false;
-                this.setRecipientDialogVisible = false;
-                // this.$message.success("Success.The transactionHash is: " + hash.transactionHash);
-                this.showStakeTransactionDialog = true;
-                this.stakeTransaction = hash.transactionHash;
-            } catch (e) {
-                this.setRecipientDialogLoading = false;
-                this.$message.error({message: e.message, showClose: true, duration: 0});
             }
         }
     }
